@@ -1,0 +1,70 @@
+<% content_for :title, "Reserva ##{@booking_group.id.split('-').first}" %>
+
+<div class="max-w-lg mx-auto">
+  <div class="flex items-center gap-3 mb-6">
+    <%= link_to "← Minhas reservas", reservas_path, class: "text-sm text-gray-500 hover:underline" %>
+  </div>
+
+  <div class="bg-white rounded-xl border border-gray-200 p-6">
+    <div class="flex items-center justify-between mb-5">
+      <h1 class="text-xl font-bold text-gray-900">Reserva</h1>
+      <span class="<%= booking_group_status_class(@booking_group.status) %> text-sm font-semibold px-3 py-1 rounded-full">
+        <%= t("booking_group.status.#{@booking_group.status}", default: @booking_group.status.humanize) %>
+      </span>
+    </div>
+
+    <%# Bookings %>
+    <div class="divide-y divide-gray-100 mb-5">
+      <% @booking_group.bookings.includes(:availability => [:service, :dentist]).each do |b| %>
+        <div class="py-4 flex justify-between items-start">
+          <div>
+            <p class="font-medium text-gray-900"><%= b.availability.service.name %></p>
+            <p class="text-sm text-gray-500">
+              <%= l(b.availability.date, format: :default) %> ·
+              <%= b.availability.starts_at.strftime("%H:%M") %>–<%= b.availability.ends_at.strftime("%H:%M") %>
+            </p>
+            <p class="text-sm text-gray-500">Dr(a). <%= b.availability.dentist.name %></p>
+          </div>
+          <div class="text-right">
+            <p class="font-semibold text-gray-700">
+              R$ <%= number_with_precision(b.price_cents / 100.0, precision: 2, delimiter: ".", separator: ",") %>
+            </p>
+            <% if b.confirmed? && b.availability.cancellable? %>
+              <%= button_to cancelar_reserva_path(b), method: :patch,
+                    class: "mt-1 text-xs text-red-500 hover:text-red-700",
+                    data: { turbo_confirm: "Cancelar esta reserva?" } do %>
+                Cancelar este horário
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <%# Totais %>
+    <div class="space-y-2 text-sm border-t pt-4">
+      <div class="flex justify-between text-gray-600">
+        <span>Subtotal</span>
+        <span>R$ <%= number_with_precision(@booking_group.subtotal_cents / 100.0, precision: 2, delimiter: ".", separator: ",") %></span>
+      </div>
+      <% if @booking_group.discount_cents > 0 %>
+        <div class="flex justify-between text-green-700">
+          <span>Desconto</span>
+          <span>− R$ <%= number_with_precision(@booking_group.discount_cents / 100.0, precision: 2, delimiter: ".", separator: ",") %></span>
+        </div>
+      <% end %>
+      <div class="flex justify-between font-bold text-base text-gray-900 pt-2 border-t">
+        <span>Total</span>
+        <span class="text-blue-700">R$ <%= number_with_precision(@booking_group.total_cents / 100.0, precision: 2, delimiter: ".", separator: ",") %></span>
+      </div>
+    </div>
+
+    <%# Link para pagamento se pendente %>
+    <% if @booking_group.pending? && @booking_group.payment.present? %>
+      <div class="mt-5">
+        <%= link_to "Ver QR Code Pix →", pagamento_path(@booking_group.payment),
+              class: "block text-center w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition" %>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,67 @@
+<% content_for :title, "Horários" %>
+
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">Horários disponíveis</h1>
+  <%= link_to "+ Novo horário", new_admin_availability_path(date: @date),
+        class: "px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700" %>
+</div>
+
+<%# Navegação de data %>
+<div class="flex items-center gap-4 mb-6">
+  <%= link_to "‹", admin_availabilities_path(date: @date - 1.day),
+        class: "px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50" %>
+  <%= form_with url: admin_availabilities_path, method: :get, data: { turbo: false } do |f| %>
+    <%= f.date_field :date, value: @date, class: "border border-gray-300 rounded-lg px-3 py-2 text-sm",
+          onchange: "this.form.submit()" %>
+  <% end %>
+  <%= link_to "›", admin_availabilities_path(date: @date + 1.day),
+        class: "px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50" %>
+  <span class="text-sm text-gray-500"><%= l(@date, format: :long) %></span>
+</div>
+
+<% if @availabilities.empty? %>
+  <div class="text-center py-16 text-gray-400">
+    <p>Nenhum horário cadastrado para esta data.</p>
+    <%= link_to "+ Criar o primeiro horário", new_admin_availability_path(date: @date),
+          class: "mt-3 inline-block text-blue-600 hover:underline text-sm" %>
+  </div>
+<% else %>
+  <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th class="px-5 py-3 text-left font-medium text-gray-600">Horário</th>
+          <th class="px-5 py-3 text-left font-medium text-gray-600">Serviço</th>
+          <th class="px-5 py-3 text-left font-medium text-gray-600">Dentista</th>
+          <th class="px-5 py-3 text-left font-medium text-gray-600">Status</th>
+          <th class="px-5 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <% @availabilities.each do |av| %>
+          <tr class="hover:bg-gray-50">
+            <td class="px-5 py-4 font-mono text-gray-800">
+              <%= av.starts_at.strftime("%H:%M") %> – <%= av.ends_at.strftime("%H:%M") %>
+            </td>
+            <td class="px-5 py-4 text-gray-700"><%= av.service.name %></td>
+            <td class="px-5 py-4 text-gray-700"><%= av.dentist.name %></td>
+            <td class="px-5 py-4">
+              <span class="<%= av.available? ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' %> text-xs font-semibold px-2 py-1 rounded-full">
+                <%= av.status %>
+              </span>
+            </td>
+            <td class="px-5 py-4 text-right flex gap-2 justify-end">
+              <%= link_to "Editar", edit_admin_availability_path(av),
+                    class: "text-blue-600 hover:underline text-xs" %>
+              <% unless av.booked? %>
+                <%= button_to "Excluir", admin_availability_path(av), method: :delete,
+                      class: "text-red-500 hover:text-red-700 text-xs",
+                      data: { turbo_confirm: "Excluir este horário?" } %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

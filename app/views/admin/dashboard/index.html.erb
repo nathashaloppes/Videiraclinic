@@ -1,0 +1,40 @@
+<% content_for :title, "Dashboard" %>
+
+<h1 class="text-2xl font-bold text-gray-900 mb-8">Dashboard</h1>
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+  <div class="bg-white rounded-xl border border-gray-200 p-6">
+    <p class="text-sm text-gray-500 mb-1">Agendamentos hoje</p>
+    <p class="text-3xl font-bold text-gray-900"><%= @todays_bookings %></p>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-200 p-6">
+    <p class="text-sm text-gray-500 mb-1">Pagamentos pendentes</p>
+    <p class="text-3xl font-bold text-yellow-600"><%= @pending_payments %></p>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-200 p-6">
+    <p class="text-sm text-gray-500 mb-1">Receita do mês</p>
+    <p class="text-3xl font-bold text-green-700">R$ <%= number_with_precision(@monthly_revenue, precision: 2, delimiter: ".", separator: ",") %></p>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+  <%= link_to admin_availabilities_path, class: "bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 hover:shadow-sm transition" do %>
+    <h2 class="font-semibold text-gray-900 mb-1">Gerenciar Horários</h2>
+    <p class="text-sm text-gray-500">Criar, editar e remover disponibilidades.</p>
+  <% end %>
+
+  <%= link_to admin_bookings_path, class: "bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 hover:shadow-sm transition" do %>
+    <h2 class="font-semibold text-gray-900 mb-1">Reservas</h2>
+    <p class="text-sm text-gray-500">Ver todas as reservas e seu status.</p>
+  <% end %>
+
+  <%= link_to admin_users_path, class: "bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 hover:shadow-sm transition" do %>
+    <h2 class="font-semibold text-gray-900 mb-1">Dentistas</h2>
+    <p class="text-sm text-gray-500">Ver e editar dados das dentistas cadastradas.</p>
+  <% end %>
+
+  <%= link_to admin_discount_rules_path, class: "bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 hover:shadow-sm transition" do %>
+    <h2 class="font-semibold text-gray-900 mb-1">Descontos</h2>
+    <p class="text-sm text-gray-500">Regras de desconto por quantidade de horários.</p>
+  <% end %>
+</div>

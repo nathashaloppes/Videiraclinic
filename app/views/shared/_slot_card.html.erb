@@ -1,0 +1,37 @@
+<% in_cart = Array(session[:cart_ids]).include?(availability.id) %>
+
+<div id="slot-<%= availability.id %>"
+     class="bg-white rounded-xl border <%= in_cart ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200' %> p-4 flex flex-col gap-3 shadow-sm hover:shadow-md transition">
+
+  <div class="flex items-start justify-between">
+    <div>
+      <p class="font-semibold text-gray-900"><%= availability.service.name %></p>
+      <p class="text-sm text-gray-500">Dr(a). <%= availability.dentist.name %></p>
+    </div>
+    <span class="text-sm font-bold text-blue-700">
+      R$ <%= number_with_precision(availability.service.price, precision: 2, delimiter: ".", separator: ",") %>
+    </span>
+  </div>
+
+  <div class="text-sm text-gray-600 space-y-1">
+    <p>📅 <%= l(availability.date, format: :default) %></p>
+    <p>🕐 <%= availability.starts_at.strftime("%H:%M") %> – <%= availability.ends_at.strftime("%H:%M") %></p>
+    <p>⏱ <%= availability.service.duration_minutes %> min</p>
+  </div>
+
+  <% if in_cart %>
+    <%= button_to remove_from_carrinho_path(availability_id: availability.id),
+          method: :delete,
+          class: "w-full py-2 px-4 bg-red-50 text-red-700 border border-red-200 rounded-lg text-sm font-medium hover:bg-red-100 transition",
+          data: { turbo_stream: true } do %>
+      ✕ Remover do carrinho
+    <% end %>
+  <% else %>
+    <%= button_to add_to_carrinho_path(availability_id: availability.id),
+          method: :post,
+          class: "w-full py-2 px-4 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition",
+          data: { turbo_stream: true } do %>
+      + Adicionar ao carrinho
+    <% end %>
+  <% end %>
+</div>

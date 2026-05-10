@@ -1,0 +1,10 @@
+<%= turbo_stream.replace "slot-#{params[:availability_id]}" do %>
+  <% av = Availability.find_by(id: params[:availability_id]) %>
+  <% if av %>
+    <%= render "shared/slot_card", availability: av %>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.replace "cart-summary" do %>
+  <%= render "shared/cart_summary" %>
+<% end %>

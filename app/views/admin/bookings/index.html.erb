@@ -1,0 +1,57 @@
+<% content_for :title, "Reservas" %>
+
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">Reservas</h1>
+</div>
+
+<%# Filtros %>
+<%= form_with url: admin_bookings_path, method: :get, class: "flex gap-3 mb-6", data: { turbo: false } do |f| %>
+  <%= f.select :status,
+        options_for_select([["Todos", ""], ["Pendente", "pending"], ["Confirmado", "confirmed"],
+                            ["Cancelado", "cancelled"], ["Expirado", "expired"]], params[:status]),
+        {}, class: "border border-gray-300 rounded-lg px-3 py-2 text-sm" %>
+  <%= f.date_field :date, value: params[:date], placeholder: "Filtrar por data",
+        class: "border border-gray-300 rounded-lg px-3 py-2 text-sm" %>
+  <%= f.submit "Filtrar", class: "px-4 py-2 bg-gray-700 text-white rounded-lg text-sm cursor-pointer hover:bg-gray-800" %>
+  <%= link_to "Limpar", admin_bookings_path, class: "px-4 py-2 border border-gray-300 text-gray-600 rounded-lg text-sm hover:bg-gray-50" %>
+<% end %>
+
+<% if @booking_groups.empty? %>
+  <div class="text-center py-16 text-gray-400">Nenhuma reserva encontrada.</div>
+<% else %>
+  <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th class="px-5 py-3 text-left font-medium text-gray-600">ID</th>
+          <th class="px-5 py-3 text-left font-medium text-gray-600">Dentista</th>
+          <th class="px-5 py-3 text-left font-medium text-gray-600">Horários</th>
+          <th class="px-5 py-3 text-left font-medium text-gray-600">Total</th>
+          <th class="px-5 py-3 text-left font-medium text-gray-600">Status</th>
+          <th class="px-5 py-3 text-left font-medium text-gray-600">Data</th>
+          <th class="px-5 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <% @booking_groups.each do |group| %>
+          <tr class="hover:bg-gray-50">
+            <td class="px-5 py-4 font-mono text-xs text-gray-400"><%= group.id.split("-").first %></td>
+            <td class="px-5 py-4 text-gray-700"><%= group.patient.name %></td>
+            <td class="px-5 py-4 text-gray-700"><%= group.bookings.size %></td>
+            <td class="px-5 py-4 font-semibold text-blue-700">R$ <%= money(group.total_cents) %></td>
+            <td class="px-5 py-4">
+              <span class="<%= booking_group_status_class(group.status) %> text-xs font-semibold px-2 py-1 rounded-full">
+                <%= group.status %>
+              </span>
+            </td>
+            <td class="px-5 py-4 text-gray-500"><%= l(group.created_at, format: :default) %></td>
+            <td class="px-5 py-4">
+              <%= link_to "Ver", admin_booking_path(group), class: "text-blue-600 hover:underline text-xs" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+<% end %>
