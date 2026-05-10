@@ -1,5 +1,7 @@
 # Videira Dental Clinic
 
+[![CI](https://github.com/iandersonf/videira-dental/actions/workflows/ci.yml/badge.svg)](https://github.com/iandersonf/videira-dental/actions/workflows/ci.yml)
+
 Sistema SaaS para aluguel de salas odontológicas. Dentistas buscam horários disponíveis, montam um carrinho com múltiplos slots e pagam via Pix em uma única transação. A clínica gerencia tudo pelo painel administrativo.
 
 ---
