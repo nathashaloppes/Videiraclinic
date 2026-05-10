@@ -1,0 +1,21 @@
+<% cart_ids = Array(session[:cart_ids]) %>
+<% count = cart_ids.size %>
+
+<% if count > 0 %>
+  <div class="sticky top-4 z-10 mb-6 bg-blue-50 border border-blue-200 rounded-xl px-5 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <span class="inline-flex items-center justify-center w-7 h-7 bg-blue-600 text-white text-sm font-bold rounded-full">
+        <%= count %>
+      </span>
+      <span class="text-sm font-medium text-blue-800">
+        <%= pluralize(count, "horário", "horários") %> no carrinho
+      </span>
+    </div>
+    <div class="flex gap-3">
+      <%= link_to "Ver carrinho", carrinho_path,
+            class: "text-sm text-blue-700 hover:underline" %>
+      <%= link_to "Confirmar e pagar →", confirmar_reservas_path,
+            class: "text-sm font-semibold bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700" %>
+    </div>
+  </div>
+<% end %>

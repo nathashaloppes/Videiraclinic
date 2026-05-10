@@ -1,0 +1,49 @@
+<% content_for :title, "Pagamentos" %>
+
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">Pagamentos</h1>
+</div>
+
+<%= form_with url: admin_payments_path, method: :get, class: "flex gap-3 mb-6", data: { turbo: false } do |f| %>
+  <%= f.select :status,
+        options_for_select([["Todos", ""], ["Pendente", "pending"], ["Pago", "paid"],
+                            ["Expirado", "expired"], ["Cancelado", "cancelled"]], params[:status]),
+        {}, class: "border border-gray-300 rounded-lg px-3 py-2 text-sm" %>
+  <%= f.submit "Filtrar", class: "px-4 py-2 bg-gray-700 text-white rounded-lg text-sm cursor-pointer" %>
+<% end %>
+
+<div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 border-b border-gray-200">
+      <tr>
+        <th class="px-5 py-3 text-left font-medium text-gray-600">Dentista</th>
+        <th class="px-5 py-3 text-left font-medium text-gray-600">Valor</th>
+        <th class="px-5 py-3 text-left font-medium text-gray-600">Status</th>
+        <th class="px-5 py-3 text-left font-medium text-gray-600">Expira em</th>
+        <th class="px-5 py-3 text-left font-medium text-gray-600">Criado em</th>
+        <th class="px-5 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      <% @payments.each do |p| %>
+        <tr class="hover:bg-gray-50">
+          <td class="px-5 py-4 text-gray-700"><%= p.booking_group.patient.name %></td>
+          <td class="px-5 py-4 font-semibold text-blue-700">R$ <%= money(p.amount_cents) %></td>
+          <td class="px-5 py-4">
+            <span class="<%= p.paid? ? 'bg-green-100 text-green-700' : p.expired? ? 'bg-red-100 text-red-600' : 'bg-yellow-100 text-yellow-700' %> text-xs font-semibold px-2 py-1 rounded-full">
+              <%= p.status %>
+            </span>
+          </td>
+          <td class="px-5 py-4 text-gray-500 text-xs">
+            <%= p.expires_at ? l(p.expires_at, format: :default) : "—" %>
+          </td>
+          <td class="px-5 py-4 text-gray-500 text-xs"><%= l(p.created_at, format: :default) %></td>
+          <td class="px-5 py-4">
+            <%= link_to "Ver", admin_payment_path(p), class: "text-blue-600 hover:underline text-xs" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+<%== pagy_nav(@pagy) if @pagy.pages > 1 %>

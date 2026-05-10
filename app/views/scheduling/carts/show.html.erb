@@ -1,0 +1,51 @@
+<% content_for :title, "Carrinho" %>
+
+<div class="max-w-2xl mx-auto">
+  <h1 class="text-2xl font-bold text-gray-900 mb-6">Seu carrinho</h1>
+
+  <% if @cart_availabilities.empty? %>
+    <div class="text-center py-16 text-gray-400">
+      <p class="text-lg">Seu carrinho está vazio.</p>
+      <%= link_to "← Ver horários disponíveis", root_path, class: "mt-4 inline-block text-blue-600 hover:underline" %>
+    </div>
+  <% else %>
+    <div class="space-y-3 mb-6">
+      <% @cart_availabilities.each do |av| %>
+        <div id="slot-<%= av.id %>" class="bg-white rounded-xl border border-gray-200 p-4 flex items-center justify-between">
+          <div>
+            <p class="font-semibold text-gray-900"><%= av.service.name %></p>
+            <p class="text-sm text-gray-500">
+              <%= l(av.date, format: :default) %> · <%= av.starts_at.strftime("%H:%M") %>–<%= av.ends_at.strftime("%H:%M") %>
+            </p>
+            <p class="text-sm text-gray-500">Dr(a). <%= av.dentist.name %></p>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="font-bold text-blue-700">
+              R$ <%= number_with_precision(av.service.price, precision: 2, delimiter: ".", separator: ",") %>
+            </span>
+            <%= button_to remove_from_carrinho_path(availability_id: av.id),
+                  method: :delete,
+                  class: "text-red-500 hover:text-red-700 text-sm",
+                  data: { turbo_stream: true } do %>
+              ✕ Remover
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="bg-gray-50 rounded-xl border border-gray-200 p-5 space-y-3">
+      <div class="flex justify-between text-sm text-gray-600">
+        <span><%= pluralize(@cart_availabilities.size, "horário", "horários") %></span>
+        <span>R$ <%= number_with_precision(@cart_availabilities.sum { |a| a.service.price }, precision: 2, delimiter: ".", separator: ",") %></span>
+      </div>
+    </div>
+
+    <div class="mt-6 flex gap-3">
+      <%= button_to "Esvaziar carrinho", carrinho_path, method: :delete,
+            class: "px-4 py-2 border border-gray-300 text-gray-600 rounded-lg text-sm hover:bg-gray-50" %>
+      <%= link_to "Confirmar e pagar com Pix →", confirmar_reservas_path,
+            class: "flex-1 text-center py-2 px-6 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700" %>
+    </div>
+  <% end %>
+</div>

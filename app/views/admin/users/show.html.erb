@@ -1,0 +1,70 @@
+<% content_for :title, @user.name %>
+
+<div class="mb-4">
+  <%= link_to "← Dentistas", admin_users_path, class: "text-sm text-gray-500 hover:underline" %>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <div class="lg:col-span-2 space-y-5">
+    <%# Dados do usuário %>
+    <div class="bg-white rounded-xl border border-gray-200 p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h1 class="text-xl font-bold text-gray-900"><%= @user.name %></h1>
+        <%= link_to "Editar", edit_admin_user_path(@user),
+              class: "text-sm text-blue-600 hover:underline" %>
+      </div>
+      <div class="text-sm text-gray-600 space-y-2">
+        <p><strong>E-mail:</strong> <%= @user.email %></p>
+        <p><strong>Telefone:</strong> <%= @user.phone.presence || "—" %></p>
+        <p><strong>CPF:</strong> <%= @user.cpf.presence || "—" %></p>
+        <p><strong>Nascimento:</strong> <%= @user.birth_date ? l(@user.birth_date, format: :default) : "—" %></p>
+        <p><strong>Cadastro:</strong> <%= l(@user.created_at, format: :default) %></p>
+        <p><strong>Login via:</strong> <%= @user.provider&.humanize || "Email/senha" %></p>
+      </div>
+    </div>
+
+    <%# Reservas recentes %>
+    <div class="bg-white rounded-xl border border-gray-200 p-6">
+      <h2 class="font-semibold text-gray-900 mb-4">Últimas reservas</h2>
+      <% if @booking_groups.empty? %>
+        <p class="text-sm text-gray-400">Sem reservas.</p>
+      <% else %>
+        <div class="space-y-3">
+          <% @booking_groups.each do |group| %>
+            <div class="flex items-center justify-between text-sm">
+              <div>
+                <span class="<%= booking_group_status_class(group.status) %> text-xs font-semibold px-2 py-1 rounded-full mr-2">
+                  <%= group.status %>
+                </span>
+                <%= pluralize(group.bookings.size, "horário", "horários") %> ·
+                <%= l(group.created_at, format: :default) %>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="font-semibold text-blue-700">R$ <%= money(group.total_cents) %></span>
+                <%= link_to "Ver", admin_booking_path(group), class: "text-xs text-blue-600 hover:underline" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# Histórico PaperTrail %>
+  <div class="bg-white rounded-xl border border-gray-200 p-6 h-fit">
+    <h2 class="font-semibold text-gray-900 mb-4">Histórico de alterações</h2>
+    <% if @versions.empty? %>
+      <p class="text-sm text-gray-400">Nenhuma alteração registrada.</p>
+    <% else %>
+      <div class="space-y-3">
+        <% @versions.each do |v| %>
+          <div class="text-xs border-l-2 border-gray-200 pl-3">
+            <p class="font-medium text-gray-700"><%= v.event %></p>
+            <p class="text-gray-400"><%= l(v.created_at, format: :default) %></p>
+            <p class="text-gray-500">Por: <%= v.whodunnit&.truncate(20) || "sistema" %></p>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
