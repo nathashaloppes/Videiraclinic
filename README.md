@@ -297,15 +297,20 @@ app/
 
 ## Deploy em produção
 
-O projeto inclui um `Dockerfile` otimizado para produção. O método recomendado é o **Kamal**, ferramenta de deploy da própria equipe do Rails.
+O projeto inclui um `Dockerfile` otimizado para produção. O método recomendado é o **Kamal**, ferramenta de deploy da própria equipe do Rails. Abaixo está o passo a passo completo do zero ao ar.
 
-### Pré-requisitos no servidor
+### Pré-requisitos
 
-- VPS com Ubuntu 22.04+ (ex: DigitalOcean, Hetzner, AWS EC2)
+**Servidor (VPS):**
+- Ubuntu 22.04+ (DigitalOcean, Hetzner, AWS EC2, etc.)
 - Mínimo 1 vCPU / 1 GB RAM
-- Docker instalado
-- Portas 80 e 443 abertas
+- Portas 80 e 443 abertas no firewall
 - Domínio apontando para o IP do servidor
+- Acesso SSH com sua chave pública já no servidor (`~/.ssh/authorized_keys`)
+
+**Máquina local:**
+- Docker instalado e rodando
+- Conta no [Docker Hub](https://hub.docker.com) (gratuita)
 
 ### 1. Instalar o Kamal (máquina local)
 
@@ -392,49 +397,112 @@ MERCADOPAGO_WEBHOOK_SECRET=seu-webhook-secret
 OWNER_PASSWORD=SenhaForteOwner2024!
 ```
 
-### 4. Fazer o primeiro deploy
+### 4. Preparar o servidor
+
+O Kamal instala o Docker e configura tudo automaticamente no servidor. Basta rodar uma vez:
 
 ```bash
-kamal setup   # configura o servidor e sobe os containers pela primeira vez
-kamal deploy  # deploys subsequentes
+kamal server bootstrap
 ```
 
-O Kamal irá automaticamente:
-- Fazer o build da imagem Docker
-- Enviar para o Docker Hub
-- Subir os containers no servidor (Rails + Sidekiq + PostgreSQL + Redis)
-- Configurar SSL via Let's Encrypt
-- Rodar `db:prepare` no boot
-
-### 5. Comandos úteis pós-deploy
+Isso instala o Docker no servidor via SSH. Se o seu usuário não for root, garanta que ele esteja no grupo `docker`:
 
 ```bash
-kamal logs              # ver logs da aplicação
-kamal console           # abrir Rails console no servidor
-kamal app exec 'bin/rails db:migrate'  # rodar migrations manualmente
-kamal redeploy          # redeploy sem rebuild da imagem
+# No servidor (via SSH)
+sudo usermod -aG docker $USER
+```
+
+### 5. Primeiro deploy
+
+```bash
+kamal setup
+```
+
+Esse comando executa tudo de uma vez:
+1. Faz o build da imagem Docker localmente
+2. Envia a imagem para o Docker Hub
+3. Instala os containers no servidor (Rails + Sidekiq + PostgreSQL + Redis)
+4. Obtém o certificado SSL via Let's Encrypt
+5. Roda `db:prepare` (cria e migra o banco automaticamente)
+
+Ao final, a aplicação estará disponível em `https://seudominio.com.br`.
+
+### 6. Deploys subsequentes
+
+A cada nova versão:
+
+```bash
+git push origin main  # envia o código
+kamal deploy          # build + push + swap sem downtime
+```
+
+O Kamal faz o deploy com **zero downtime** — o container antigo só é removido após o novo estar saudável.
+
+### Comandos úteis no dia a dia
+
+```bash
+kamal logs                              # logs em tempo real
+kamal console                           # Rails console no servidor
+kamal app exec 'bin/rails db:migrate'   # rodar migrations
+kamal app exec 'bin/rails db:seed'      # rodar seeds
+kamal redeploy                          # redeploy sem rebuild (mais rápido)
+kamal rollback                          # volta para a versão anterior
+kamal app details                       # status dos containers
+```
+
+### Verificando o deploy
+
+```bash
+kamal app details   # deve mostrar containers rodando
+curl https://seudominio.com.br/up  # endpoint de health check do Rails
 ```
 
 ---
 
-### Alternativa: Deploy manual com Docker
+### Alternativa: Deploy manual com Docker + Nginx
 
-Se preferir sem o Kamal, suba diretamente no servidor:
+Se preferir não usar o Kamal, suba diretamente no servidor:
+
+**1. Build e run da imagem:**
 
 ```bash
-# No servidor
 docker build -t videira-dental .
 docker run -d \
   -p 3000:3000 \
   -e RAILS_MASTER_KEY=$(cat config/master.key) \
-  -e DATABASE_URL=postgresql://... \
-  -e REDIS_URL=redis://... \
-  -e SECRET_KEY_BASE=... \
+  -e DATABASE_URL=postgresql://usuario:senha@localhost:5432/videira_dental_production \
+  -e REDIS_URL=redis://localhost:6379/0 \
+  -e SECRET_KEY_BASE=$(bin/rails secret) \
+  -e GOOGLE_CLIENT_ID=... \
+  -e GOOGLE_CLIENT_SECRET=... \
+  -e MERCADOPAGO_ACCESS_TOKEN=... \
+  -e MERCADOPAGO_WEBHOOK_SECRET=... \
   --name videira-dental \
   videira-dental
 ```
 
-Use Nginx como proxy reverso com SSL via Certbot na frente da porta 3000.
+**2. Configurar Nginx como proxy reverso:**
+
+```nginx
+server {
+    server_name seudominio.com.br;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+**3. Obter SSL com Certbot:**
+
+```bash
+sudo apt install certbot python3-certbot-nginx -y
+sudo certbot --nginx -d seudominio.com.br
+```
 
 ---
 
