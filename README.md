@@ -105,6 +105,55 @@ bundle exec sidekiq  # Terminal 3
 
 ---
 
+## Configurando o Google OAuth 2.0
+
+### 1. Criar o projeto no Google Cloud Console
+
+1. Acesse [console.cloud.google.com](https://console.cloud.google.com)
+2. Clique em **Select a project → New Project**
+3. Dê um nome (ex: `Videira Dental`) e clique em **Create**
+
+### 2. Ativar a API do Google
+
+1. No menu lateral: **APIs & Services → Library**
+2. Busque por **Google Identity** e clique em **Enable**
+
+### 3. Criar as credenciais OAuth
+
+1. Vá em **APIs & Services → Credentials**
+2. Clique em **+ Create Credentials → OAuth client ID**
+3. Se solicitado, configure a **OAuth consent screen** primeiro:
+   - User Type: **External**
+   - App name: `Videira Dental`
+   - Support email: seu e-mail
+   - Salve e volte para criar as credenciais
+4. Application type: **Web application**
+5. Em **Authorized redirect URIs**, adicione:
+   ```
+   http://localhost:3000/auth/google_oauth2/callback
+   ```
+6. Clique em **Create** — você receberá o **Client ID** e o **Client Secret**
+
+### 4. Atualizar o `.env`
+
+```bash
+GOOGLE_CLIENT_ID=SEU_CLIENT_ID.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=SEU_CLIENT_SECRET
+```
+
+Reinicie o servidor e o botão **Entrar com Google** estará funcional. Na primeira vez, o Google pode exibir um aviso de app não verificado — clique em **Advanced → Go to Videira Dental (unsafe)**. Isso é esperado em desenvolvimento.
+
+### Para produção
+
+Adicione o domínio real nas credenciais do Google Cloud:
+
+- **Authorized JavaScript origins:** `https://seudominio.com.br`
+- **Authorized redirect URIs:** `https://seudominio.com.br/auth/google_oauth2/callback`
+
+E altere o **Publishing status** da consent screen de **Testing** para **In production**.
+
+---
+
 ## Testes
 
 ```bash
