@@ -250,6 +250,149 @@ app/
 
 ---
 
+## Deploy em produção
+
+O projeto inclui um `Dockerfile` otimizado para produção. O método recomendado é o **Kamal**, ferramenta de deploy da própria equipe do Rails.
+
+### Pré-requisitos no servidor
+
+- VPS com Ubuntu 22.04+ (ex: DigitalOcean, Hetzner, AWS EC2)
+- Mínimo 1 vCPU / 1 GB RAM
+- Docker instalado
+- Portas 80 e 443 abertas
+- Domínio apontando para o IP do servidor
+
+### 1. Instalar o Kamal (máquina local)
+
+```bash
+gem install kamal
+```
+
+### 2. Inicializar a configuração do Kamal
+
+```bash
+kamal init
+```
+
+Isso cria o arquivo `config/deploy.yml`. Configure-o com os dados do seu servidor:
+
+```yaml
+# config/deploy.yml
+service: videira-dental
+image: seu-usuario-dockerhub/videira-dental
+
+servers:
+  web:
+    - SEU_IP_DO_SERVIDOR
+  job:
+    hosts:
+      - SEU_IP_DO_SERVIDOR
+    cmd: bundle exec sidekiq
+
+registry:
+  username: seu-usuario-dockerhub
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+env:
+  clear:
+    RAILS_ENV: production
+    REDIS_URL: redis://localhost:6379/0
+  secret:
+    - RAILS_MASTER_KEY
+    - SECRET_KEY_BASE
+    - DATABASE_URL
+    - GOOGLE_CLIENT_ID
+    - GOOGLE_CLIENT_SECRET
+    - MERCADOPAGO_ACCESS_TOKEN
+    - MERCADOPAGO_PUBLIC_KEY
+    - MERCADOPAGO_WEBHOOK_SECRET
+    - OWNER_PASSWORD
+
+accessories:
+  db:
+    image: postgres:16
+    host: SEU_IP_DO_SERVIDOR
+    env:
+      secret:
+        - POSTGRES_PASSWORD
+    directories:
+      - data:/var/lib/postgresql/data
+  redis:
+    image: redis:7
+    host: SEU_IP_DO_SERVIDOR
+    directories:
+      - data:/data
+
+proxy:
+  ssl: true
+  host: seudominio.com.br
+```
+
+### 3. Configurar os secrets
+
+Crie um arquivo `.kamal/secrets` (nunca commite esse arquivo):
+
+```bash
+KAMAL_REGISTRY_PASSWORD=sua-senha-dockerhub
+RAILS_MASTER_KEY=$(cat config/master.key)
+SECRET_KEY_BASE=$(bin/rails secret)
+DATABASE_URL=postgresql://postgres:SENHA_POSTGRES@localhost:5432/videira_dental_production
+POSTGRES_PASSWORD=SENHA_POSTGRES
+GOOGLE_CLIENT_ID=seu-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=seu-client-secret
+MERCADOPAGO_ACCESS_TOKEN=APP_USR-seu-token-producao
+MERCADOPAGO_PUBLIC_KEY=APP_USR-sua-public-key
+MERCADOPAGO_WEBHOOK_SECRET=seu-webhook-secret
+OWNER_PASSWORD=SenhaForteOwner2024!
+```
+
+### 4. Fazer o primeiro deploy
+
+```bash
+kamal setup   # configura o servidor e sobe os containers pela primeira vez
+kamal deploy  # deploys subsequentes
+```
+
+O Kamal irá automaticamente:
+- Fazer o build da imagem Docker
+- Enviar para o Docker Hub
+- Subir os containers no servidor (Rails + Sidekiq + PostgreSQL + Redis)
+- Configurar SSL via Let's Encrypt
+- Rodar `db:prepare` no boot
+
+### 5. Comandos úteis pós-deploy
+
+```bash
+kamal logs              # ver logs da aplicação
+kamal console           # abrir Rails console no servidor
+kamal app exec 'bin/rails db:migrate'  # rodar migrations manualmente
+kamal redeploy          # redeploy sem rebuild da imagem
+```
+
+---
+
+### Alternativa: Deploy manual com Docker
+
+Se preferir sem o Kamal, suba diretamente no servidor:
+
+```bash
+# No servidor
+docker build -t videira-dental .
+docker run -d \
+  -p 3000:3000 \
+  -e RAILS_MASTER_KEY=$(cat config/master.key) \
+  -e DATABASE_URL=postgresql://... \
+  -e REDIS_URL=redis://... \
+  -e SECRET_KEY_BASE=... \
+  --name videira-dental \
+  videira-dental
+```
+
+Use Nginx como proxy reverso com SSL via Certbot na frente da porta 3000.
+
+---
+
 ## Variáveis de ambiente completas
 
 Veja o arquivo [`.env.example`](.env.example) para a lista completa com descrições.
