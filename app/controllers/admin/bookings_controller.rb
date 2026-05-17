@@ -3,7 +3,7 @@ class Admin::BookingsController < Admin::BaseController
 
   def index
     scope = policy_scope(BookingGroup)
-      .includes(:patient, :bookings, :payment)
+      .includes(:dentist, :bookings, :payment)
       .order(created_at: :desc)
 
     scope = scope.where(status: params[:status]) if params[:status].present?

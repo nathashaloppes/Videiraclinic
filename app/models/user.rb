@@ -11,14 +11,13 @@ class User < ApplicationRecord
   has_many :bookings,        foreign_key: :patient_id
   has_one_attached :avatar
 
-  enum :role, { owner: "owner", dentist: "dentist", patient: "patient" }, default: "patient"
+  enum :role, { owner: "owner", dentist: "dentist" }, default: "dentist"
 
   validates :name, presence: true
   validates :cpf,  uniqueness: true, allow_nil: true,
     format: { with: /\A\d{11}\z/, message: "deve conter 11 dígitos" }
 
   scope :dentists, -> { where(role: "dentist") }
-  scope :patients, -> { where(role: "patient") }
 
   def self.from_omniauth(auth)
     return nil if auth.info.email.blank?

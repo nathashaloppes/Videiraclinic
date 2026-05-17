@@ -1,42 +1,43 @@
 <% content_for :title, "Minhas Reservas" %>
 
-<div class="max-w-3xl mx-auto">
-  <h1 class="text-2xl font-bold text-gray-900 mb-6">Minhas Reservas</h1>
+<%= render "shared/back_button", path: root_path %>
 
-  <% if @booking_groups.empty? %>
-    <div class="text-center py-16 text-gray-400">
-      <p class="text-lg">Você ainda não tem reservas.</p>
-      <%= link_to "Ver horários disponíveis →", root_path, class: "mt-4 inline-block text-blue-600 hover:underline" %>
-    </div>
-  <% else %>
-    <div class="space-y-4">
-      <% @booking_groups.each do |group| %>
-        <%= link_to reserva_path(group), class: "block bg-white rounded-xl border border-gray-200 p-5 hover:border-blue-300 hover:shadow-sm transition" do %>
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-xs font-mono text-gray-400">#<%= group.id.split("-").first %></span>
-            <span class="<%= booking_group_status_class(group.status) %> text-xs font-semibold px-2 py-1 rounded-full">
-              <%= t("booking_group.status.#{group.status}", default: group.status.humanize) %>
-            </span>
-          </div>
-          <div class="space-y-1">
-            <% group.bookings.each do |b| %>
-              <p class="text-sm text-gray-700">
-                <%= b.availability.service.name %> ·
-                <%= l(b.availability.date, format: :default) %> ·
-                <%= b.availability.starts_at.strftime("%H:%M") %>
-              </p>
-            <% end %>
-          </div>
-          <div class="mt-3 flex justify-between items-center text-sm">
-            <span class="text-gray-500"><%= pluralize(group.bookings.size, "horário", "horários") %></span>
-            <span class="font-bold text-blue-700">
-              R$ <%= number_with_precision(group.total_cents / 100.0, precision: 2, delimiter: ".", separator: ",") %>
-            </span>
-          </div>
-        <% end %>
+<h1 class="text-2xl font-semibold mb-6 text-vdc-primary">Minhas reservas</h1>
+
+<% if @booking_groups.empty? %>
+  <div class="empty-state">
+    <p class="mb-4">Você ainda não tem reservas.</p>
+    <%= link_to "Reservar agora →", root_path, class: "btn-sm-primary px-5 py-3" %>
+  </div>
+<% else %>
+  <div class="flex flex-col gap-3">
+    <% @booking_groups.each do |group| %>
+      <%= link_to reserva_path(group),
+            class: "block card-sm hover:shadow-md transition-all active:scale-[0.98]" do %>
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-mono text-vdc-secondary">#<%= group.id.split("-").first %></span>
+          <span class="<%= booking_group_status_class(group.status) %>"
+                style="<%= booking_group_status_style(group.status) %>">
+            <%= t("booking_group.status.#{group.status}", default: group.status.humanize) %>
+          </span>
+        </div>
+        <div class="flex flex-col gap-1 mb-3">
+          <% group.bookings.each do |b| %>
+            <p class="text-sm text-vdc-foreground">
+              <%= b.availability.label %> ·
+              <%= l(b.availability.date, format: :default) %> ·
+              <%= b.availability.starts_at.strftime("%H:%M") %>
+            </p>
+          <% end %>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-xs text-vdc-secondary"><%= pluralize(group.bookings.size, "horário", "horários") %></span>
+          <span class="text-sm font-semibold text-vdc-primary">
+            R$ <%= number_with_precision(group.total_cents / 100.0, precision: 2, delimiter: ".", separator: ",") %>
+          </span>
+        </div>
       <% end %>
-    </div>
-
-    <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
-  <% end %>
-</div>
+    <% end %>
+  </div>
+  <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+<% end %>

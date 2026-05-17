@@ -15,7 +15,7 @@ class Admin::DiscountRulesController < Admin::BaseController
     if @rule.save
       redirect_to admin_discount_rules_path, notice: "Regra de desconto criada."
     else
-      render :new, status: :unprocessable_entity
+      redirect_to admin_discount_rules_path, alert: @rule.errors.full_messages.to_sentence
     end
   end
 
@@ -25,7 +25,7 @@ class Admin::DiscountRulesController < Admin::BaseController
     if @rule.update(rule_params)
       redirect_to admin_discount_rules_path, notice: "Regra atualizada."
     else
-      render :edit, status: :unprocessable_entity
+      redirect_to admin_discount_rules_path, alert: @rule.errors.full_messages.to_sentence
     end
   end
 

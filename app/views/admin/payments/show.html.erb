@@ -1,56 +1,58 @@
 <% content_for :title, "Pagamento" %>
 
-<div class="mb-4">
-  <%= link_to "← Pagamentos", admin_payments_path, class: "text-sm text-gray-500 hover:underline" %>
-</div>
+<%= render "shared/back_button", path: admin_payments_path %>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-  <div class="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-6">
-    <div class="flex items-center justify-between mb-5">
-      <h1 class="text-xl font-bold text-gray-900">Pagamento</h1>
-      <span class="<%= @payment.paid? ? 'bg-green-100 text-green-700' : @payment.expired? ? 'bg-red-100 text-red-600' : 'bg-yellow-100 text-yellow-700' %> text-sm font-semibold px-3 py-1 rounded-full">
-        <%= @payment.status %>
-      </span>
-    </div>
-
-    <div class="text-sm text-gray-600 space-y-2 mb-6">
-      <p><strong>Dentista:</strong> <%= @payment.booking_group.patient.name %></p>
-      <p><strong>Valor:</strong> <span class="font-bold text-blue-700">R$ <%= money(@payment.amount_cents) %></span></p>
-      <p><strong>Gateway ID:</strong> <span class="font-mono text-xs"><%= @payment.gateway_id %></span></p>
-      <% if @payment.paid_at %>
-        <p><strong>Pago em:</strong> <%= l(@payment.paid_at, format: :default) %></p>
-      <% end %>
-      <% if @payment.expires_at %>
-        <p><strong>Expirava em:</strong> <%= l(@payment.expires_at, format: :default) %></p>
-      <% end %>
-      <p><strong>Criado em:</strong> <%= l(@payment.created_at, format: :default) %></p>
-    </div>
-
-    <h2 class="font-semibold text-gray-900 mb-3">Horários reservados</h2>
-    <div class="divide-y divide-gray-100">
-      <% @payment.booking_group.bookings.includes(:availability => :service).each do |b| %>
-        <div class="py-3 flex justify-between text-sm">
-          <span class="text-gray-700"><%= b.availability.service.name %> · <%= l(b.availability.date, format: :default) %> <%= b.availability.starts_at.strftime("%H:%M") %></span>
-          <span class="font-semibold text-gray-700">R$ <%= money(b.price_cents) %></span>
-        </div>
-      <% end %>
-    </div>
+<div class="card mb-4">
+  <div class="flex items-center justify-between mb-5">
+    <h1 class="text-xl font-semibold text-vdc-primary">Pagamento</h1>
+    <span class="text-xs px-3 py-1 rounded-full font-semibold"
+          style="<%= @payment.paid? ? 'background-color: #E8F5E9; color: #388E3C' : @payment.expired? ? 'background-color: #FFEBEE; color: #d4183d' : 'background-color: #FFF9C4; color: #F57F17' %>">
+      <%= @payment.status %>
+    </span>
   </div>
 
-  <div class="bg-white rounded-xl border border-gray-200 p-6 h-fit">
-    <h2 class="font-semibold text-gray-900 mb-4">Histórico PaperTrail</h2>
-    <% if @versions.empty? %>
-      <p class="text-sm text-gray-400">Sem alterações.</p>
-    <% else %>
-      <div class="space-y-3">
-        <% @versions.each do |v| %>
-          <div class="text-xs border-l-2 border-gray-200 pl-3">
-            <p class="font-medium text-gray-700"><%= v.event %></p>
-            <p class="text-gray-400"><%= l(v.created_at, format: :default) %></p>
-            <p class="text-gray-500">Por: <%= v.whodunnit || "sistema" %></p>
-          </div>
-        <% end %>
+  <div class="flex flex-col gap-2 text-sm mb-5 text-vdc-secondary">
+    <p><strong class="text-vdc-foreground">Dentista:</strong> <%= @payment.booking_group.dentist.name %></p>
+    <p><strong class="text-vdc-foreground">Valor:</strong>
+      <span class="font-bold text-vdc-primary">R$ <%= money(@payment.amount_cents) %></span>
+    </p>
+    <p><strong class="text-vdc-foreground">Gateway ID:</strong>
+      <span class="font-mono text-xs text-vdc-foreground"><%= @payment.gateway_id %></span>
+    </p>
+    <% if @payment.paid_at %>
+      <p><strong class="text-vdc-foreground">Pago em:</strong> <%= l(@payment.paid_at, format: :default) %></p>
+    <% end %>
+    <% if @payment.expires_at %>
+      <p><strong class="text-vdc-foreground">Expira em:</strong> <%= l(@payment.expires_at, format: :default) %></p>
+    <% end %>
+    <p><strong class="text-vdc-foreground">Criado em:</strong> <%= l(@payment.created_at, format: :default) %></p>
+  </div>
+
+  <h2 class="font-semibold mb-3 text-vdc-primary">Horários reservados</h2>
+  <div class="flex flex-col divide-y" style="divide-color: #E0E0E0">
+    <% @payment.booking_group.bookings.includes(:availability => :service).each do |b| %>
+      <div class="py-3 flex justify-between text-sm">
+        <span class="text-vdc-foreground">
+          <%= b.availability.label %> · <%= l(b.availability.date, format: :default) %>
+          <%= b.availability.starts_at.strftime("%H:%M") %>
+        </span>
+        <span class="font-semibold text-vdc-primary">R$ <%= money(b.price_cents) %></span>
       </div>
     <% end %>
   </div>
 </div>
+
+<% unless @versions.empty? %>
+  <div class="card-md">
+    <h2 class="font-semibold mb-4 text-vdc-primary">Histórico</h2>
+    <div class="flex flex-col gap-3">
+      <% @versions.each do |v| %>
+        <div class="text-xs border-l-2 pl-3" style="border-color: #C9B8A8">
+          <p class="font-medium text-vdc-foreground"><%= v.event %></p>
+          <p class="text-vdc-secondary"><%= l(v.created_at, format: :default) %></p>
+          <p class="text-vdc-secondary">Por: <%= v.whodunnit || "sistema" %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

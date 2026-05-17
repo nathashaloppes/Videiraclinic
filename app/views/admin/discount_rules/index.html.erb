@@ -1,47 +1,107 @@
 <% content_for :title, "Descontos" %>
 
-<div class="flex items-center justify-between mb-6">
-  <h1 class="text-2xl font-bold text-gray-900">Regras de desconto</h1>
-  <%= link_to "+ Nova regra", new_admin_discount_rule_path,
-        class: "px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700" %>
+<div class="flex items-center justify-between mb-4">
+  <h1 class="text-xl font-semibold" style="color: #5D4037">Descontos</h1>
+  <button type="button" onclick="<%= open_modal('new-rule-modal') %>"
+          class="flex items-center gap-1 text-xs px-4 py-2 rounded-full text-white font-medium cursor-pointer"
+          style="background-color: #5D4037">
+    + Nova regra
+  </button>
 </div>
 
-<p class="text-sm text-gray-500 mb-5">
-  Quanto mais horários a dentista reservar de uma vez, maior o desconto aplicado automaticamente.
+<p class="text-sm mb-5" style="color: #8D6E63">
+  Quanto mais horários reservados de uma vez, maior o desconto aplicado automaticamente.
 </p>
 
-<div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-  <table class="w-full text-sm">
-    <thead class="bg-gray-50 border-b border-gray-200">
-      <tr>
-        <th class="px-5 py-3 text-left font-medium text-gray-600">Mín. horários</th>
-        <th class="px-5 py-3 text-left font-medium text-gray-600">Desconto</th>
-        <th class="px-5 py-3 text-left font-medium text-gray-600">Status</th>
-        <th class="px-5 py-3"></th>
-      </tr>
-    </thead>
-    <tbody class="divide-y divide-gray-100">
-      <% @rules.each do |rule| %>
-        <tr class="<%= rule.active? ? '' : 'opacity-50' %> hover:bg-gray-50">
-          <td class="px-5 py-4 font-semibold text-gray-900">
-            <%= rule.min_slots %> ou mais
-          </td>
-          <td class="px-5 py-4 text-green-700 font-bold"><%= rule.discount_percent %>%</td>
-          <td class="px-5 py-4">
-            <span class="<%= rule.active? ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' %> text-xs font-semibold px-2 py-1 rounded-full">
-              <%= rule.active? ? "Ativa" : "Inativa" %>
-            </span>
-          </td>
-          <td class="px-5 py-4 text-right flex gap-3 justify-end">
-            <%= link_to "Editar", edit_admin_discount_rule_path(rule), class: "text-blue-600 hover:underline text-xs" %>
-            <% if rule.active? %>
-              <%= button_to "Desativar", admin_discount_rule_path(rule), method: :delete,
-                    class: "text-red-500 hover:text-red-700 text-xs",
-                    data: { turbo_confirm: "Desativar esta regra? Reservas existentes não são afetadas." } %>
-            <% end %>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-</div>
+<% if @rules.empty? %>
+  <div class="empty-state"><p>Nenhuma regra cadastrada.</p></div>
+<% else %>
+  <div class="flex flex-col gap-3">
+    <% @rules.each do |rule| %>
+      <div class="bg-white rounded-2xl shadow-sm p-4 flex items-center justify-between <%= 'opacity-50' unless rule.active? %>">
+        <div>
+          <p class="font-medium text-sm" style="color: #3E2723">
+            <%= rule.min_slots %> ou mais horários
+          </p>
+          <p class="text-xl font-bold mt-1" style="color: #388E3C">
+            <%= rule.discount_percent %>% de desconto
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs px-2 py-1 rounded-full"
+                style="<%= rule.active? ? 'background-color:#E8F5E9;color:#388E3C' : 'background-color:#F5F5F5;color:#757575' %>">
+            <%= rule.active? ? "Ativa" : "Inativa" %>
+          </span>
+          <button type="button" onclick="<%= open_modal("edit-rule-#{rule.id}") %>"
+                  class="text-xs px-3 py-1 rounded-full border cursor-pointer"
+                  style="border-color:#5D4037;color:#5D4037">
+            Editar
+          </button>
+          <% if rule.active? %>
+            <button type="button" onclick="<%= open_modal("delete-rule-#{rule.id}") %>"
+                    class="text-xs px-3 py-1 rounded-full border cursor-pointer"
+                    style="border-color:#d4183d;color:#d4183d">
+              ✕
+            </button>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<%# ── Modal: Nova regra ──────────────────────────────────────────────────── %>
+<%= render layout: "shared/modal", locals: { id: "new-rule-modal", title: "+ Nova regra de desconto" } do %>
+  <%= form_with url: admin_discount_rules_path, method: :post, data: { turbo: false }, class: "flex flex-col gap-4" do %>
+    <div>
+      <label class="label">Mínimo de horários</label>
+      <input type="number" name="discount_rule[min_slots]" min="2" required
+             placeholder="2" class="input-field">
+      <p class="text-xs mt-1" style="color:#8D6E63">A partir de quantos horários o desconto é aplicado.</p>
+    </div>
+    <div>
+      <label class="label">Desconto (%)</label>
+      <input type="number" name="discount_rule[discount_percent]" min="1" max="100" required
+             placeholder="10" class="input-field">
+    </div>
+    <%= render "shared/modal_actions", label: "Criar regra" %>
+  <% end %>
+<% end %>
+
+<%# ── Modais por regra ────────────────────────────────────────────────────── %>
+<% @rules.each do |rule| %>
+  <%= render layout: "shared/modal", locals: { id: "edit-rule-#{rule.id}", title: "Editar regra de desconto" } do %>
+    <%= form_with url: admin_discount_rule_path(rule), method: :patch, data: { turbo: false }, class: "flex flex-col gap-4" do %>
+      <div>
+        <label class="label">Mínimo de horários</label>
+        <input type="number" name="discount_rule[min_slots]" min="2" required
+               value="<%= rule.min_slots %>" class="input-field">
+        <p class="text-xs mt-1" style="color:#8D6E63">A partir de quantos horários o desconto é aplicado.</p>
+      </div>
+      <div>
+        <label class="label">Desconto (%)</label>
+        <input type="number" name="discount_rule[discount_percent]" min="1" max="100" required
+               value="<%= rule.discount_percent %>" class="input-field">
+      </div>
+      <%= render "shared/modal_actions", label: "Salvar alterações" %>
+    <% end %>
+  <% end %>
+
+  <% if rule.active? %>
+    <%= render layout: "shared/modal", locals: { id: "delete-rule-#{rule.id}", title: "Desativar regra?" } do %>
+      <p class="text-center text-sm mb-5" style="color:#8D6E63">
+        <%= rule.min_slots %> horários → <%= rule.discount_percent %>% de desconto
+      </p>
+      <div class="flex gap-3">
+        <button type="button" onclick="this.closest('dialog').close()" class="btn-outline flex-1 cursor-pointer">
+          Cancelar
+        </button>
+        <%= button_to admin_discount_rule_path(rule), method: :delete,
+              class: "flex-1 py-3 px-4 rounded-full text-white text-sm font-medium cursor-pointer",
+              style: "background-color:#d4183d" do %>
+          Desativar
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

@@ -64,7 +64,9 @@ Rails.application.routes.draw do
     resources :clinics,        only: [:show, :edit, :update]
     resources :users,          only: [:index, :show, :edit, :update, :destroy]
     resources :services,       except: [:show]
-    resources :availabilities, except: [:show]
+    resources :availabilities, except: [:show] do
+      member { patch :toggle }
+    end
     resources :discount_rules, except: [:show]
     resources :bookings,       only: [:index, :show] do
       member { patch "cancelar", to: "admin/bookings#cancel" }

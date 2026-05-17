@@ -1,51 +1,50 @@
-<% content_for :title, "Dentistas" %>
+<% content_for :title, "Usuários" %>
 
-<div class="flex items-center justify-between mb-6">
-  <h1 class="text-2xl font-bold text-gray-900">Dentistas</h1>
+<h1 class="text-2xl font-semibold mb-4 text-vdc-primary">Usuários</h1>
+
+<div class="card-sm mb-4">
+  <%= form_with url: admin_users_path, method: :get, data: { turbo: false }, class: "flex gap-2" do |f| %>
+    <%= f.search_field :q, value: params[:q], placeholder: "Buscar por nome...",
+          class: "input-field flex-1" %>
+    <%= f.submit "Buscar", class: "btn-primary cursor-pointer" %>
+    <% if params[:q].present? %>
+      <%= link_to "✕", admin_users_path, class: "px-3 py-3 rounded-full text-sm text-vdc-secondary" %>
+    <% end %>
+  <% end %>
 </div>
 
-<%= form_with url: admin_users_path, method: :get, class: "flex gap-3 mb-6", data: { turbo: false } do |f| %>
-  <%= f.search_field :q, value: params[:q], placeholder: "Buscar por nome...",
-        class: "flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500" %>
-  <%= f.submit "Buscar", class: "px-4 py-2 bg-gray-700 text-white rounded-lg text-sm cursor-pointer hover:bg-gray-800" %>
-  <% if params[:q].present? %>
-    <%= link_to "Limpar", admin_users_path, class: "px-4 py-2 border border-gray-300 text-gray-600 rounded-lg text-sm hover:bg-gray-50" %>
-  <% end %>
-<% end %>
-
 <% if @users.empty? %>
-  <div class="text-center py-16 text-gray-400">Nenhum usuário encontrado.</div>
+  <div class="empty-state"><p>Nenhum usuário encontrado.</p></div>
 <% else %>
-  <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-    <table class="w-full text-sm">
-      <thead class="bg-gray-50 border-b border-gray-200">
-        <tr>
-          <th class="px-5 py-3 text-left font-medium text-gray-600">Nome</th>
-          <th class="px-5 py-3 text-left font-medium text-gray-600">E-mail</th>
-          <th class="px-5 py-3 text-left font-medium text-gray-600">Role</th>
-          <th class="px-5 py-3 text-left font-medium text-gray-600">Cadastro</th>
-          <th class="px-5 py-3"></th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-100">
-        <% @users.each do |u| %>
-          <tr class="hover:bg-gray-50">
-            <td class="px-5 py-4 font-medium text-gray-900"><%= u.name %></td>
-            <td class="px-5 py-4 text-gray-600"><%= u.email %></td>
-            <td class="px-5 py-4">
-              <span class="<%= u.dentist? ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600' %> text-xs font-semibold px-2 py-1 rounded-full">
-                <%= u.role %>
-              </span>
-            </td>
-            <td class="px-5 py-4 text-gray-500 text-xs"><%= l(u.created_at, format: :default) %></td>
-            <td class="px-5 py-4 text-right flex gap-3 justify-end">
-              <%= link_to "Ver", admin_user_path(u), class: "text-blue-600 hover:underline text-xs" %>
-              <%= link_to "Editar", edit_admin_user_path(u), class: "text-gray-500 hover:underline text-xs" %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+  <div class="flex flex-col gap-3">
+    <% @users.each do |u| %>
+      <div class="card-sm flex items-center gap-3">
+        <%= render "shared/avatar", user: u, size: "md" %>
+        <div class="flex-1 min-w-0">
+          <p class="font-medium text-sm truncate text-vdc-foreground"><%= u.name %></p>
+          <p class="text-xs truncate text-vdc-secondary"><%= u.email %></p>
+          <span class="text-xs px-2 py-0.5 rounded-full"
+                style="<%= u.owner? ? 'background-color:#fef8e1;color:#5D4037' : 'background-color:#F5F5F5;color:#757575' %>">
+            <%= u.role %>
+          </span>
+        </div>
+        <div class="flex gap-2 shrink-0">
+          <%= link_to "Ver", admin_user_path(u), class: "btn-xs-outline" %>
+          <button type="button" onclick="<%= open_modal("edit-user-#{u.id}") %>"
+                  class="text-xs px-3 py-1 rounded-full border cursor-pointer"
+                  style="border-color:#5D4037;color:#5D4037">
+            Editar
+          </button>
+        </div>
+      </div>
+    <% end %>
   </div>
   <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+<% end %>
+
+<%# ── Modais de edição por dentista ──────────────────────────────────────── %>
+<% @users.each do |u| %>
+  <%= render layout: "shared/modal", locals: { id: "edit-user-#{u.id}", title: "Editar — #{u.name}" } do %>
+    <%= render "admin/users/edit_form", user: u %>
+  <% end %>
 <% end %>

@@ -1,6 +1,6 @@
 class BookingPolicy < ApplicationPolicy
-  def show?   = owner_or_patient?
-  def cancel? = record.confirmed? && owner_or_patient?
+  def show?   = owner_or_dentist?
+  def cancel? = record.confirmed? && owner_or_dentist?
 
   class Scope < ApplicationPolicy::Scope
     def resolve
@@ -14,7 +14,7 @@ class BookingPolicy < ApplicationPolicy
 
   private
 
-  def owner_or_patient?
+  def owner_or_dentist?
     user.owner? || record.patient_id == user.id
   end
 end

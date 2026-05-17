@@ -1,0 +1,7 @@
+<%# Uso: <%= render 'shared/logo', size: 'sm' | 'md' | 'lg' %>
+<% size = local_assigns[:size] || 'md' %>
+<% heights = { 'sm' => 'h-8', 'md' => 'h-10', 'lg' => 'h-14' } %>
+
+<%= image_tag "logo.jpeg",
+      alt: "Videira Clinic",
+      class: "#{heights[size]} w-auto object-contain" %>

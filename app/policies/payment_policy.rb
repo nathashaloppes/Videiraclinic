@@ -1,5 +1,5 @@
 class PaymentPolicy < ApplicationPolicy
-  def show? = owner_or_patient?
+  def show? = owner_or_dentist?
 
   class Scope < ApplicationPolicy::Scope
     def resolve
@@ -13,7 +13,7 @@ class PaymentPolicy < ApplicationPolicy
 
   private
 
-  def owner_or_patient?
+  def owner_or_dentist?
     user.owner? || record.booking_group.patient_id == user.id
   end
 end

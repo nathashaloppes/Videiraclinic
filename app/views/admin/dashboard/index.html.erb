@@ -1,40 +1,46 @@
 <% content_for :title, "Dashboard" %>
 
-<h1 class="text-2xl font-bold text-gray-900 mb-8">Dashboard</h1>
+<h1 class="text-2xl font-semibold mb-6" style="color: #5D4037">Dashboard</h1>
 
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-  <div class="bg-white rounded-xl border border-gray-200 p-6">
-    <p class="text-sm text-gray-500 mb-1">Agendamentos hoje</p>
-    <p class="text-3xl font-bold text-gray-900"><%= @todays_bookings %></p>
+<div class="grid grid-cols-2 gap-3 mb-6">
+  <div class="bg-white rounded-2xl shadow-sm p-4">
+    <p class="text-xs mb-1" style="color: #8D6E63">Agendamentos hoje</p>
+    <p class="text-3xl font-bold" style="color: #5D4037"><%= @todays_bookings %></p>
   </div>
-  <div class="bg-white rounded-xl border border-gray-200 p-6">
-    <p class="text-sm text-gray-500 mb-1">Pagamentos pendentes</p>
-    <p class="text-3xl font-bold text-yellow-600"><%= @pending_payments %></p>
+  <div class="bg-white rounded-2xl shadow-sm p-4">
+    <p class="text-xs mb-1" style="color: #8D6E63">Pag. pendentes</p>
+    <p class="text-3xl font-bold" style="color: #F57F17"><%= @pending_payments %></p>
   </div>
-  <div class="bg-white rounded-xl border border-gray-200 p-6">
-    <p class="text-sm text-gray-500 mb-1">Receita do mês</p>
-    <p class="text-3xl font-bold text-green-700">R$ <%= number_with_precision(@monthly_revenue, precision: 2, delimiter: ".", separator: ",") %></p>
+  <div class="bg-white rounded-2xl shadow-sm p-4 col-span-2">
+    <p class="text-xs mb-1" style="color: #8D6E63">Receita do mês</p>
+    <p class="text-3xl font-bold" style="color: #388E3C">
+      R$ <%= number_with_precision(@monthly_revenue, precision: 2, delimiter: ".", separator: ",") %>
+    </p>
   </div>
 </div>
 
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-  <%= link_to admin_availabilities_path, class: "bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 hover:shadow-sm transition" do %>
-    <h2 class="font-semibold text-gray-900 mb-1">Gerenciar Horários</h2>
-    <p class="text-sm text-gray-500">Criar, editar e remover disponibilidades.</p>
+<div class="grid grid-cols-2 gap-3">
+  <%= link_to admin_availabilities_path,
+        class: "bg-white rounded-2xl shadow-sm p-4 hover:shadow-md transition-all active:scale-[0.98]" do %>
+    <h2 class="text-sm font-semibold mb-1" style="color: #5D4037">Horários</h2>
+    <p class="text-xs" style="color: #8D6E63">Criar e editar disponibilidades</p>
   <% end %>
 
-  <%= link_to admin_bookings_path, class: "bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 hover:shadow-sm transition" do %>
-    <h2 class="font-semibold text-gray-900 mb-1">Reservas</h2>
-    <p class="text-sm text-gray-500">Ver todas as reservas e seu status.</p>
+  <%= link_to admin_bookings_path,
+        class: "bg-white rounded-2xl shadow-sm p-4 hover:shadow-md transition-all active:scale-[0.98]" do %>
+    <h2 class="text-sm font-semibold mb-1" style="color: #5D4037">Reservas</h2>
+    <p class="text-xs" style="color: #8D6E63">Ver todas as reservas</p>
   <% end %>
 
-  <%= link_to admin_users_path, class: "bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 hover:shadow-sm transition" do %>
-    <h2 class="font-semibold text-gray-900 mb-1">Dentistas</h2>
-    <p class="text-sm text-gray-500">Ver e editar dados das dentistas cadastradas.</p>
+  <%= link_to admin_users_path,
+        class: "bg-white rounded-2xl shadow-sm p-4 hover:shadow-md transition-all active:scale-[0.98]" do %>
+    <h2 class="text-sm font-semibold mb-1" style="color: #5D4037">Usuários</h2>
+    <p class="text-xs" style="color: #8D6E63">Dados das dentistas</p>
   <% end %>
 
-  <%= link_to admin_discount_rules_path, class: "bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 hover:shadow-sm transition" do %>
-    <h2 class="font-semibold text-gray-900 mb-1">Descontos</h2>
-    <p class="text-sm text-gray-500">Regras de desconto por quantidade de horários.</p>
+  <%= link_to admin_discount_rules_path,
+        class: "bg-white rounded-2xl shadow-sm p-4 hover:shadow-md transition-all active:scale-[0.98]" do %>
+    <h2 class="text-sm font-semibold mb-1" style="color: #5D4037">Descontos</h2>
+    <p class="text-xs" style="color: #8D6E63">Regras de desconto</p>
   <% end %>
 </div>

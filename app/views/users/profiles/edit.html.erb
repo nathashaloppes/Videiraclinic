@@ -1,0 +1,47 @@
+<% content_for :title, "Editar perfil" %>
+
+<%= render "shared/back_button", path: perfil_path %>
+
+<h1 class="text-2xl font-semibold mb-6 text-vdc-primary">Editar perfil</h1>
+
+<div class="card">
+  <%= form_with model: @user, url: perfil_path, method: :patch, multipart: true,
+        class: "flex flex-col gap-4" do |f| %>
+
+    <%= render "shared/form_errors", object: @user %>
+
+    <div class="flex justify-center mb-2">
+      <%= render "shared/avatar", user: @user, size: "lg" %>
+    </div>
+
+    <div>
+      <%= f.label :avatar, "Foto de perfil", class: "label" %>
+      <%= f.file_field :avatar, accept: "image/*", class: "w-full text-sm text-vdc-foreground" %>
+    </div>
+
+    <div>
+      <%= f.label :name, "Nome completo", class: "label" %>
+      <%= f.text_field :name, class: "input-field" %>
+    </div>
+
+    <div>
+      <%= f.label :phone, "Telefone", class: "label" %>
+      <%= f.text_field :phone, inputmode: "tel", class: "input-field" %>
+    </div>
+
+    <div>
+      <%= f.label :cpf, "CPF (11 dígitos)", class: "label" %>
+      <%= f.text_field :cpf, maxlength: 11, inputmode: "numeric", class: "input-field" %>
+    </div>
+
+    <div>
+      <%= f.label :birth_date, "Data de nascimento", class: "label" %>
+      <%= f.date_field :birth_date, class: "input-field" %>
+    </div>
+
+    <div class="flex gap-3 pt-2">
+      <%= f.submit "Salvar alterações", class: "btn-primary flex-1 cursor-pointer" %>
+      <%= link_to "Cancelar", perfil_path, class: "btn-outline flex-1" %>
+    </div>
+  <% end %>
+</div>

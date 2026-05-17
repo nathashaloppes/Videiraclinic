@@ -1,7 +1,7 @@
 class Admin::PaymentsController < Admin::BaseController
   def index
     scope = policy_scope(Payment)
-      .includes(booking_group: :patient)
+      .includes(booking_group: :dentist)
       .order(created_at: :desc)
 
     scope = scope.where(status: params[:status]) if params[:status].present?
@@ -10,7 +10,7 @@ class Admin::PaymentsController < Admin::BaseController
 
   def show
     @payment = policy_scope(Payment)
-      .includes(booking_group: [:patient, :bookings])
+      .includes(booking_group: [:dentist, :bookings])
       .find(params[:id])
     @versions = @payment.versions.order(created_at: :desc)
   end
