@@ -1,66 +1,69 @@
-<div class="bg-white rounded-xl border border-gray-200 p-6 text-center"
+<div class="bg-white rounded-2xl border p-6 text-center"
+     style="border-color: #E0E0E0"
      data-controller="countdown"
      data-countdown-expires-at-value="<%= payment.expires_at&.iso8601 %>">
 
   <div class="mb-4">
-    <span class="inline-block bg-yellow-100 text-yellow-800 text-xs font-semibold px-3 py-1 rounded-full">
+    <span class="inline-block text-xs px-3 py-1 rounded-full font-semibold"
+          style="background-color: #fef8e1; color: #5D4037">
       Aguardando pagamento
     </span>
   </div>
 
-  <%# QR Code %>
   <% if payment.pix_qr_url.present? %>
-    <div class="flex justify-center mb-4">
+    <div class="w-48 h-48 mx-auto mb-4">
       <img src="data:image/png;base64,<%= payment.pix_qr_url %>"
            alt="QR Code Pix"
-           class="w-48 h-48 border border-gray-200 rounded-lg p-2" />
+           class="w-full h-full object-contain rounded-xl border"
+           style="border-color: #E0E0E0" />
     </div>
   <% else %>
-    <div class="flex justify-center mb-4">
-      <div class="w-48 h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50">
-        <div class="text-center text-gray-400">
-          <p class="text-xs font-mono">SANDBOX</p>
-          <p class="text-xs">QR Code simulado</p>
-        </div>
+    <div class="w-48 h-48 mx-auto mb-4 border-2 border-dashed rounded-xl flex items-center justify-center"
+         style="border-color: #C9B8A8; background-color: #fef8e1">
+      <div class="text-center">
+        <p class="text-xs font-mono" style="color: #8D6E63">SANDBOX</p>
+        <p class="text-xs" style="color: #8D6E63">QR Code simulado</p>
       </div>
     </div>
   <% end %>
 
-  <%# Código copia-e-cola %>
   <% if payment.pix_qr_code.present? %>
-    <div class="mb-5" data-controller="clipboard">
-      <p class="text-xs text-gray-500 mb-2">Pix Copia e Cola</p>
-      <div class="flex gap-2">
+    <div class="mb-5 text-left" data-controller="clipboard">
+      <p class="text-xs mb-2" style="color: #8D6E63">Pix Copia e Cola:</p>
+      <div class="rounded-xl p-3 mb-2" style="background-color: #fef8e1">
         <input type="text" readonly
                value="<%= payment.pix_qr_code %>"
                data-clipboard-target="source"
-               class="flex-1 text-xs border border-gray-300 rounded-lg px-3 py-2 bg-gray-50 font-mono truncate" />
-        <button data-action="clipboard#copy"
-                class="px-3 py-2 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 whitespace-nowrap">
-          Copiar
-        </button>
+               class="w-full text-xs font-mono truncate bg-transparent outline-none"
+               style="color: #3E2723" />
       </div>
-      <p class="text-xs text-green-600 mt-1 hidden" data-clipboard-target="success">Copiado!</p>
+      <button data-action="clipboard#copy"
+              class="w-full py-2 rounded-full border text-xs font-medium"
+              style="border-color: #5D4037; color: #5D4037">
+        Copiar código
+      </button>
+      <p class="text-xs mt-2 text-center hidden" data-clipboard-target="success"
+         style="color: #388E3C">Copiado!</p>
     </div>
   <% end %>
 
-  <%# Countdown %>
   <% if payment.expires_at.present? %>
-    <div class="text-sm text-gray-500 mb-5">
-      <p>Este QR Code expira em</p>
-      <p class="text-2xl font-bold text-gray-800 font-mono mt-1"
+    <div class="mb-5">
+      <p class="text-xs mb-1" style="color: #8D6E63">Tempo restante</p>
+      <p class="text-2xl font-bold font-mono" style="color: #5D4037"
          data-countdown-target="display">
         <%= distance_of_time_in_words(Time.current, payment.expires_at) %>
       </p>
     </div>
   <% end %>
 
-  <p class="text-xs text-gray-400 mb-4">
+  <p class="text-xs mb-5" style="color: #8D6E63">
     A confirmação é automática após o pagamento. Aguarde nesta página.
   </p>
 
   <%= button_to cancelar_pagamento_path(payment), method: :post,
-        class: "text-sm text-red-500 hover:text-red-700",
+        class: "text-xs underline",
+        style: "color: #d4183d",
         data: { turbo_confirm: "Cancelar esta reserva e liberar os horários?" } do %>
     Cancelar reserva
   <% end %>

@@ -21,7 +21,7 @@ class Admin::UsersController < Admin::BaseController
     if @user.update(admin_user_params)
       redirect_to admin_user_path(@user), notice: "Usuário atualizado."
     else
-      render :edit, status: :unprocessable_entity
+      redirect_to admin_user_path(@user), alert: @user.errors.full_messages.to_sentence
     end
   end
 

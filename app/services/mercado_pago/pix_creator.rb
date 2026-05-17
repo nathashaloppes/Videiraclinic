@@ -16,7 +16,7 @@ module MercadoPago
         transaction_amount: @group.total_cents / 100.0,
         description:        "Aluguel de sala – Videira Dental",
         payment_method_id:  "pix",
-        payer:              { email: @group.patient.email },
+        payer:              { email: @group.dentist.email },
         external_reference: @group.id,
         date_of_expiration: expires_at.iso8601,
         notification_url:   "#{ENV.fetch('APP_HOST', 'http://localhost:3000')}/webhooks/mercadopago"

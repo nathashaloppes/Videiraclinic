@@ -36,7 +36,7 @@ class Scheduling::CartsController < ApplicationController
 
   def destroy
     session.delete(:cart_ids)
-    redirect_to root_path, notice: "Carrinho esvaziado."
+    redirect_back(fallback_location: root_path)
   end
 
   private

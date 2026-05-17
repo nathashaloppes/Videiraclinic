@@ -1,70 +1,79 @@
 <% content_for :title, @user.name %>
 
-<div class="mb-4">
-  <%= link_to "← Dentistas", admin_users_path, class: "text-sm text-gray-500 hover:underline" %>
+<%= render "shared/back_button", path: admin_users_path %>
+
+<div class="bg-white rounded-3xl shadow-lg p-6 mb-4">
+  <div class="flex items-center gap-3 mb-5">
+    <%= render "shared/avatar", user: @user, size: "lg" %>
+    <div>
+      <h1 class="text-xl font-semibold" style="color: #5D4037"><%= @user.name %></h1>
+      <span class="text-xs px-2 py-0.5 rounded-full"
+            style="<%= @user.owner? ? 'background-color:#fef8e1;color:#5D4037' : 'background-color:#F5F5F5;color:#757575' %>">
+        <%= @user.role %>
+      </span>
+    </div>
+    <button type="button" onclick="<%= open_modal('edit-user-modal') %>"
+            class="ml-auto text-xs px-3 py-2 rounded-full border cursor-pointer"
+            style="border-color:#5D4037;color:#5D4037">
+      Editar
+    </button>
+  </div>
+
+  <div class="flex flex-col gap-2 text-sm" style="color: #8D6E63">
+    <p><strong style="color:#3E2723">E-mail:</strong> <%= @user.email %></p>
+    <p><strong style="color:#3E2723">Telefone:</strong> <%= @user.phone.presence || "—" %></p>
+    <p><strong style="color:#3E2723">CPF:</strong> <%= @user.cpf.presence || "—" %></p>
+    <p><strong style="color:#3E2723">Nascimento:</strong> <%= @user.birth_date ? l(@user.birth_date, format: :default) : "—" %></p>
+    <p><strong style="color:#3E2723">Cadastro:</strong> <%= l(@user.created_at, format: :default) %></p>
+    <p><strong style="color:#3E2723">Login via:</strong> <%= @user.provider&.humanize || "Email/senha" %></p>
+  </div>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-  <div class="lg:col-span-2 space-y-5">
-    <%# Dados do usuário %>
-    <div class="bg-white rounded-xl border border-gray-200 p-6">
-      <div class="flex items-center justify-between mb-4">
-        <h1 class="text-xl font-bold text-gray-900"><%= @user.name %></h1>
-        <%= link_to "Editar", edit_admin_user_path(@user),
-              class: "text-sm text-blue-600 hover:underline" %>
-      </div>
-      <div class="text-sm text-gray-600 space-y-2">
-        <p><strong>E-mail:</strong> <%= @user.email %></p>
-        <p><strong>Telefone:</strong> <%= @user.phone.presence || "—" %></p>
-        <p><strong>CPF:</strong> <%= @user.cpf.presence || "—" %></p>
-        <p><strong>Nascimento:</strong> <%= @user.birth_date ? l(@user.birth_date, format: :default) : "—" %></p>
-        <p><strong>Cadastro:</strong> <%= l(@user.created_at, format: :default) %></p>
-        <p><strong>Login via:</strong> <%= @user.provider&.humanize || "Email/senha" %></p>
-      </div>
+<div class="bg-white rounded-2xl shadow-sm p-5 mb-4">
+  <h2 class="font-semibold mb-4" style="color: #5D4037">Últimas reservas</h2>
+  <% if @booking_groups.empty? %>
+    <p class="text-sm" style="color: #8D6E63">Sem reservas.</p>
+  <% else %>
+    <div class="flex flex-col gap-3">
+      <% @booking_groups.each do |group| %>
+        <div class="flex items-center justify-between text-sm">
+          <div>
+            <span class="<%= booking_group_status_class(group.status) %>"
+                  style="<%= booking_group_status_style(group.status) %>">
+              <%= group.status %>
+            </span>
+            <span class="text-xs ml-2" style="color: #8D6E63">
+              <%= pluralize(group.bookings.size, "horário", "horários") %> · <%= l(group.created_at, format: :default) %>
+            </span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-semibold" style="color: #5D4037">R$ <%= money(group.total_cents) %></span>
+            <%= link_to "Ver", admin_booking_path(group),
+                  class: "text-xs px-2 py-1 rounded-full border",
+                  style: "border-color:#5D4037;color:#5D4037" %>
+          </div>
+        </div>
+      <% end %>
     </div>
+  <% end %>
+</div>
 
-    <%# Reservas recentes %>
-    <div class="bg-white rounded-xl border border-gray-200 p-6">
-      <h2 class="font-semibold text-gray-900 mb-4">Últimas reservas</h2>
-      <% if @booking_groups.empty? %>
-        <p class="text-sm text-gray-400">Sem reservas.</p>
-      <% else %>
-        <div class="space-y-3">
-          <% @booking_groups.each do |group| %>
-            <div class="flex items-center justify-between text-sm">
-              <div>
-                <span class="<%= booking_group_status_class(group.status) %> text-xs font-semibold px-2 py-1 rounded-full mr-2">
-                  <%= group.status %>
-                </span>
-                <%= pluralize(group.bookings.size, "horário", "horários") %> ·
-                <%= l(group.created_at, format: :default) %>
-              </div>
-              <div class="flex items-center gap-3">
-                <span class="font-semibold text-blue-700">R$ <%= money(group.total_cents) %></span>
-                <%= link_to "Ver", admin_booking_path(group), class: "text-xs text-blue-600 hover:underline" %>
-              </div>
-            </div>
-          <% end %>
+<% unless @versions.empty? %>
+  <div class="bg-white rounded-2xl shadow-sm p-5">
+    <h2 class="font-semibold mb-4" style="color: #5D4037">Histórico</h2>
+    <div class="flex flex-col gap-3">
+      <% @versions.each do |v| %>
+        <div class="text-xs border-l-2 pl-3" style="border-color: #C9B8A8">
+          <p class="font-medium" style="color: #3E2723"><%= v.event %></p>
+          <p style="color: #8D6E63"><%= l(v.created_at, format: :default) %></p>
+          <p style="color: #8D6E63">Por: <%= v.whodunnit&.truncate(20) || "sistema" %></p>
         </div>
       <% end %>
     </div>
   </div>
+<% end %>
 
-  <%# Histórico PaperTrail %>
-  <div class="bg-white rounded-xl border border-gray-200 p-6 h-fit">
-    <h2 class="font-semibold text-gray-900 mb-4">Histórico de alterações</h2>
-    <% if @versions.empty? %>
-      <p class="text-sm text-gray-400">Nenhuma alteração registrada.</p>
-    <% else %>
-      <div class="space-y-3">
-        <% @versions.each do |v| %>
-          <div class="text-xs border-l-2 border-gray-200 pl-3">
-            <p class="font-medium text-gray-700"><%= v.event %></p>
-            <p class="text-gray-400"><%= l(v.created_at, format: :default) %></p>
-            <p class="text-gray-500">Por: <%= v.whodunnit&.truncate(20) || "sistema" %></p>
-          </div>
-        <% end %>
-      </div>
-    <% end %>
-  </div>
-</div>
+<%# ── Modal: Editar dentista ──────────────────────────────────────────────── %>
+<%= render layout: "shared/modal", locals: { id: "edit-user-modal", title: "Editar dentista" } do %>
+  <%= render "admin/users/edit_form", user: @user %>
+<% end %>

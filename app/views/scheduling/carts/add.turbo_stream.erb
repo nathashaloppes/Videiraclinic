@@ -2,6 +2,6 @@
   <%= render "shared/slot_card", availability: Availability.find(params[:availability_id]) %>
 <% end %>
 
-<%= turbo_stream.replace "cart-summary" do %>
+<%= turbo_stream.update "cart-summary" do %>
   <%= render "shared/cart_summary" %>
 <% end %>

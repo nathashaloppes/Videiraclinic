@@ -1,38 +1,121 @@
 <% content_for :title, "Videira Dental — Agende sua sala" %>
 
-<div class="max-w-5xl mx-auto">
-  <%# Hero %>
-  <div class="text-center py-12">
-    <h1 class="text-4xl font-bold text-gray-900">Reserve sua sala odontológica</h1>
-    <p class="mt-3 text-lg text-gray-500">Escolha o serviço, selecione o horário e pague com Pix em segundos.</p>
-  </div>
+<% min_date = Date.tomorrow %>
+<% max_date = min_date + 90.days %>
 
-  <%# Filtro de data %>
-  <div class="flex items-center gap-3 mb-6">
-    <label class="text-sm font-medium text-gray-700">Data:</label>
-    <%= form_with url: root_path, method: :get, data: { turbo: false } do |f| %>
-      <%= f.date_field :date, value: @date, class: "border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500",
-            onchange: "this.form.submit()" %>
-    <% end %>
-    <span class="text-sm text-gray-500"><%= l(@date, format: :long) %></span>
-  </div>
+<%# ── Header: SALA + date badge (opens calendar) ───────────────────────── %>
+<div class="flex items-center justify-between mb-4"
+     data-controller="calendar"
+     data-calendar-selected-value="<%= @date %>"
+     data-calendar-min-value="<%= min_date %>"
+     data-calendar-max-value="<%= max_date %>"
+     data-calendar-base-value="/">
 
-  <%# Carrinho flutuante %>
-  <%= turbo_frame_tag "cart-summary" do %>
-    <%= render "shared/cart_summary" %>
+  <span class="text-sm font-bold uppercase tracking-widest" style="color: #5D4037">Sala</span>
+
+  <%# Date badge — click opens calendar dialog %>
+  <button type="button"
+          data-action="click->calendar#open"
+          class="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full bg-white shadow-sm">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24"
+         stroke="currentColor" stroke-width="2" style="color:#8D6E63">
+      <path stroke-linecap="round" stroke-linejoin="round"
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+    </svg>
+    <span style="color:#5D4037"><%= l(@date, format: :long).downcase %></span>
+  </button>
+
+  <%# Calendar dialog %>
+  <dialog data-calendar-target="dialog"
+          data-action="click->calendar#backdropClose"
+          class="p-5">
+    <%# Month header %>
+    <div class="flex items-center justify-between mb-4">
+      <button type="button" data-action="click->calendar#prev"
+              class="p-1 rounded-full hover:bg-gray-100" style="color:#8D6E63">‹</button>
+      <span data-calendar-target="label" class="text-sm font-semibold" style="color:#5D4037"></span>
+      <button type="button" data-action="click->calendar#next"
+              class="p-1 rounded-full hover:bg-gray-100" style="color:#8D6E63">›</button>
+    </div>
+    <%# Calendar grid (rendered by Stimulus) %>
+    <div data-calendar-target="grid"></div>
+    <%# Close button %>
+    <button type="button" data-action="click->calendar#close"
+            class="mt-4 w-full text-xs py-2 rounded-full border text-center"
+            style="border-color:#E0E0E0; color:#8D6E63">
+      Fechar
+    </button>
+  </dialog>
+</div>
+
+<%# ── Week strip ─────────────────────────────────────────────────────────── %>
+<% week_start = @date.beginning_of_week(:sunday) %>
+<div class="bg-white rounded-2xl shadow-sm px-2 py-2 mb-4 flex items-center gap-1">
+  <% prev_date = [(@date - 7), min_date].max %>
+  <% can_prev  = @date - 7 >= min_date || (week_start - 7 + 6) >= min_date %>
+  <% if can_prev %>
+    <%= link_to root_path(date: prev_date.to_s),
+          class: "shrink-0 w-7 h-7 flex items-center justify-center rounded-full text-base hover:bg-gray-100 transition-colors",
+          style: "color: #8D6E63" do %>‹<% end %>
+  <% else %>
+    <span class="shrink-0 w-7 h-7 flex items-center justify-center text-base opacity-20" style="color:#8D6E63">‹</span>
   <% end %>
 
-  <%# Slots do dia %>
-  <% if @availabilities.empty? %>
-    <div class="text-center py-16 text-gray-400">
-      <p class="text-lg">Nenhum horário disponível para esta data.</p>
-      <p class="text-sm mt-2">Tente outra data ou verifique novamente mais tarde.</p>
-    </div>
-  <% else %>
-    <div id="availability-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      <% @availabilities.each do |av| %>
-        <%= render "shared/slot_card", availability: av %>
+  <div class="flex-1 flex justify-between">
+    <% 7.times do |i| %>
+      <% day      = week_start + i %>
+      <% active   = day == @date %>
+      <% disabled = day < min_date || day > max_date %>
+      <% if disabled %>
+        <span class="flex flex-col items-center px-2 py-1.5 rounded-xl opacity-25">
+          <span class="text-xs font-medium" style="color:#8D6E63"><%= %w[DOM SEG TER QUA QUI SEX SÁB][day.wday] %></span>
+          <span class="text-xs font-bold" style="color:#5D4037"><%= day.day %></span>
+        </span>
+      <% elsif active %>
+        <span class="flex flex-col items-center px-2 py-1.5 rounded-xl"
+              style="background-color:#5D4037">
+          <span class="text-xs font-medium text-white"><%= %w[DOM SEG TER QUA QUI SEX SÁB][day.wday] %></span>
+          <span class="text-xs font-bold text-white"><%= day.day %></span>
+        </span>
+      <% else %>
+        <%= link_to root_path(date: day.to_s),
+              class: "flex flex-col items-center px-2 py-1.5 rounded-xl transition-all" do %>
+          <span class="text-xs font-medium" style="color:#8D6E63"><%= %w[DOM SEG TER QUA QUI SEX SÁB][day.wday] %></span>
+          <span class="text-xs font-bold" style="color:#5D4037"><%= day.day %></span>
+        <% end %>
       <% end %>
-    </div>
+    <% end %>
+  </div>
+
+  <% if @date + 7 <= max_date %>
+    <%= link_to root_path(date: (@date + 7).to_s),
+          class: "shrink-0 w-7 h-7 flex items-center justify-center rounded-full text-base hover:bg-gray-100 transition-colors",
+          style: "color: #8D6E63" do %>›<% end %>
+  <% else %>
+    <span class="shrink-0 w-7 h-7 flex items-center justify-center text-base opacity-20" style="color:#8D6E63">›</span>
   <% end %>
 </div>
+
+<%# ── Day header ─────────────────────────────────────────────────────────── %>
+<h2 class="text-sm font-bold uppercase tracking-wide mb-4" style="color: #5D4037">
+  <%= l(@date, format: "%A, %d/%m").upcase %>
+</h2>
+
+<%# ── Slot list ───────────────────────────────────────────────────────────── %>
+<% if @availabilities.empty? %>
+  <div class="empty-state">
+    <p>Nenhum horário disponível para esta data.</p>
+    <p class="mt-1">Tente outro dia no calendário.</p>
+  </div>
+<% else %>
+  <div id="availability-grid" class="flex flex-col gap-3 pb-24">
+    <% @availabilities.each do |av| %>
+      <%= render "shared/slot_card", availability: av %>
+    <% end %>
+  </div>
+<% end %>
+
+<%# ── Cart footer (Turbo Frame) ───────────────────────────────────────────── %>
+<%= turbo_frame_tag "cart-summary" do %>
+  <%= render "shared/cart_summary" %>
+<% end %>

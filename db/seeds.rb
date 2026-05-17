@@ -1,57 +1,33 @@
 puts "Seeding database..."
 
-# Clinic
+# ── Clinic ──────────────────────────────────────────────────────────────────
 clinic = Clinic.find_or_create_by!(cnpj: "00000000000191") do |c|
-  c.name  = "Videira Dental"
+  c.name  = "Videira Clinic"
   c.phone = "51999990000"
   c.email = "contato@videiradental.com.br"
 end
-puts "  Clinic: #{clinic.name}"
+puts "  Clínica: #{clinic.name}"
 
-# Owner
+# ── Users ───────────────────────────────────────────────────────────────────
+senha = ENV.fetch("OWNER_PASSWORD", "Owner@Videira2024!")
+
 owner = User.find_or_create_by!(email: "owner@videiradental.com.br") do |u|
   u.name     = "Proprietário Videira"
-  u.password = ENV.fetch("OWNER_PASSWORD", "Owner@Videira2024!")
+  u.password = senha
   u.role     = "owner"
   u.clinic   = clinic
 end
 puts "  Owner: #{owner.email}"
 
-# Dentist
-dentist = User.find_or_create_by!(email: "dentista@videiradental.com.br") do |u|
-  u.name     = "Dr. Carlos Videira"
-  u.password = ENV.fetch("OWNER_PASSWORD", "Owner@Videira2024!")
+User.find_or_create_by!(email: "dentista@videiradental.com.br") do |u|
+  u.name     = "Dra. Cibele Videira"
+  u.password = senha
   u.role     = "dentist"
   u.clinic   = clinic
 end
-puts "  Dentist: #{dentist.email}"
+puts "  Dentist: dentista@videiradental.com.br"
 
-# Patient
-User.find_or_create_by!(email: "paciente@exemplo.com.br") do |u|
-  u.name     = "Ana Paciente"
-  u.password = ENV.fetch("OWNER_PASSWORD", "Owner@Videira2024!")
-  u.role     = "patient"
-  u.clinic   = clinic
-end
-puts "  Patient: paciente@exemplo.com.br"
-
-# Services
-[
-  { name: "Consulta",     description: "Avaliação e diagnóstico",  duration_minutes: 30, price_cents: 15000 },
-  { name: "Limpeza",      description: "Profilaxia dental",        duration_minutes: 45, price_cents: 18000 },
-  { name: "Clareamento",  description: "Clareamento dental",       duration_minutes: 60, price_cents: 35000 },
-  { name: "Extração",     description: "Extração simples",         duration_minutes: 45, price_cents: 20000 },
-].each do |attrs|
-  svc = Service.find_or_create_by!(name: attrs[:name], clinic: clinic) do |s|
-    s.description      = attrs[:description]
-    s.duration_minutes = attrs[:duration_minutes]
-    s.price_cents      = attrs[:price_cents]
-    s.active           = true
-  end
-  puts "  Service: #{svc.name} — R$ #{format('%.2f', svc.price)}"
-end
-
-# Discount rules
+# ── Discount rules ───────────────────────────────────────────────────────────
 [
   { min_slots: 2, discount_percent: 5  },
   { min_slots: 3, discount_percent: 10 },
@@ -61,33 +37,40 @@ end
     d.active           = true
   end
 end
-puts "  Discount rules: 2 criadas"
+puts "  Desconto: 2 regras criadas"
 
-# Availabilities for next 7 business days
-consulta = Service.find_by!(name: "Consulta", clinic: clinic)
-times = [["09:00", "09:30"], ["10:00", "10:30"], ["14:00", "14:30"], ["15:00", "15:30"]]
+# ── Availabilities (Aluguel de Sala) ────────────────────────────────────────
+# Limpa turnos sem reserva (idempotência durante desenvolvimento)
+Availability.where.not(status: "booked").destroy_all
 
-7.times do |i|
-  date = Date.current + i.days
+# 3 turnos fixos: Manhã / Tarde / Noite — preço por turno
+turnos = [
+  { starts: "07:00", ends: "12:00", price_cents: 17000, label: "Turno Manhã"    },
+  { starts: "13:00", ends: "18:00", price_cents: 17000, label: "Turno Tarde"    },
+  { starts: "19:00", ends: "22:00", price_cents: 12000, label: "Turno Noite"    },
+]
+
+# Cria para os próximos 14 dias (exceto domingos)
+14.times do |i|
+  date = Date.tomorrow + i.days
   next if date.sunday?
 
-  times.each do |(start_t, end_t)|
-    Availability.find_or_create_by!(
-      clinic:    clinic,
-      service:   consulta,
-      dentist:   dentist,
-      date:      date,
-      starts_at: start_t
-    ) do |a|
-      a.ends_at = end_t
-      a.status  = "available"
-    end
+  turnos.each do |t|
+    next if Availability.exists?(clinic: clinic, date: date, starts_at: t[:starts])
+
+    Availability.create!(
+      clinic:      clinic,
+      date:        date,
+      starts_at:   t[:starts],
+      ends_at:     t[:ends],
+      price_cents: t[:price_cents],
+      status:      "available"
+    )
   end
 end
-puts "  Availabilities: #{Availability.count} criadas"
+
+puts "  Turnos: #{Availability.count} criados"
 
 puts "\nSeed concluído!"
-puts "  Login owner:   owner@videiradental.com.br"
-puts "  Login dentist: dentista@videiradental.com.br"
-puts "  Login patient: paciente@exemplo.com.br"
-puts "  Senha (todos): #{ENV.fetch('OWNER_PASSWORD', 'Owner@Videira2024!')}"
+puts "  owner:   owner@videiradental.com.br | #{senha}"
+puts "  dentist: dentista@videiradental.com.br | #{senha}"

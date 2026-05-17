@@ -3,6 +3,7 @@
   <head>
     <title>Admin — <%= content_for(:title) || "Videira Dental" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= yield :head %>
@@ -10,42 +11,79 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-  <body class="bg-gray-100 text-gray-900 antialiased">
-    <div class="flex h-screen">
-      <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
-        <div class="px-6 py-5 border-b">
-          <%= link_to "Videira Dental", admin_root_path, class: "text-lg font-bold text-blue-700" %>
-          <span class="block text-xs text-gray-500 mt-1">Painel Administrativo</span>
-        </div>
-        <nav class="flex-1 px-4 py-6 space-y-1 text-sm">
-          <%= link_to "Dashboard", admin_root_path, class: "block px-3 py-2 rounded hover:bg-gray-100" %>
-          <%= link_to "Agendamentos", admin_bookings_path, class: "block px-3 py-2 rounded hover:bg-gray-100" %>
-          <%= link_to "Pagamentos", admin_payments_path, class: "block px-3 py-2 rounded hover:bg-gray-100" %>
-          <%= link_to "Serviços", admin_services_path, class: "block px-3 py-2 rounded hover:bg-gray-100" %>
-          <%= link_to "Horários", admin_availabilities_path, class: "block px-3 py-2 rounded hover:bg-gray-100" %>
-          <% if current_user.owner? %>
-            <%= link_to "Usuários", admin_users_path, class: "block px-3 py-2 rounded hover:bg-gray-100" %>
-            <%= link_to "Descontos", admin_discount_rules_path, class: "block px-3 py-2 rounded hover:bg-gray-100" %>
-            <%= link_to "Configurações", edit_admin_clinic_path(current_user.clinic), class: "block px-3 py-2 rounded hover:bg-gray-100" %>
-          <% end %>
-        </nav>
-        <div class="px-4 py-4 border-t text-sm">
-          <p class="text-gray-600 truncate"><%= current_user.name %></p>
-          <%= button_to "Sair", destroy_user_session_path, method: :delete,
-                class: "mt-2 text-xs text-red-500 hover:text-red-700" %>
-        </div>
-      </aside>
+  <body style="background-color: #fef8e1; font-family: 'Prompt', sans-serif">
+    <div class="min-h-screen overflow-x-hidden">
+      <div class="max-w-md mx-auto px-4 py-6">
 
-      <div class="flex-1 overflow-auto">
-        <% if notice.present? %>
-          <div class="bg-green-50 border-b border-green-200 text-green-800 px-6 py-3 text-sm"><%= notice %></div>
+        <div class="flex justify-center mb-6 relative">
+          <%= link_to admin_root_path do %>
+            <%= render "shared/logo", size: "lg" %>
+          <% end %>
+
+          <button type="button" onclick="<%= open_modal('logout-modal') %>"
+                  class="absolute right-0 top-0 p-2 hover:bg-white/50 rounded-full cursor-pointer"
+                  title="Sair">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" style="color: #5D4037"
+                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+          </button>
+        </div>
+
+        <%# Modal Logout — renderizado fora do container centralizado para não herdar z-index %>
+        <%= render layout: "shared/modal", locals: { id: "logout-modal", title: "Sair da conta?" } do %>
+          <p class="text-center text-sm mb-5" style="color:#8D6E63">
+            Tem certeza que deseja encerrar a sessão?
+          </p>
+          <div class="flex gap-3">
+            <button type="button" onclick="this.closest('dialog').close()"
+                    class="btn-outline flex-1 cursor-pointer">
+              Cancelar
+            </button>
+            <%= button_to destroy_user_session_path, method: :delete,
+                  class: "btn-primary flex-1 cursor-pointer" do %>
+              Sair
+            <% end %>
+          </div>
         <% end %>
-        <% if alert.present? %>
-          <div class="bg-red-50 border-b border-red-200 text-red-800 px-6 py-3 text-sm"><%= alert %></div>
-        <% end %>
-        <main class="p-8">
+
+        <%= render "shared/flash" %>
+
+        <div class="grid grid-cols-2 gap-3 mb-8">
+          <% nav_items = [
+               { label: "Reservas",   path: admin_bookings_path },
+               { label: "Clientes",   path: admin_users_path },
+               { label: "Turnos",     path: admin_availabilities_path },
+               { label: "Pagamentos", path: admin_payments_path },
+               { label: "Descontos",  path: admin_discount_rules_path },
+             ] %>
+          <% nav_items.each do |item| %>
+            <% active = current_page?(item[:path]) %>
+            <%= link_to item[:path],
+                  class: "rounded-2xl p-5 shadow-sm hover:shadow-md transition-all active:scale-[0.98] flex items-center justify-center",
+                  style: "background-color: #{active ? '#C9B8A8' : '#ffffff'}" do %>
+              <span class="text-sm font-semibold uppercase tracking-wide" style="color: #5D4037">
+                <%= item[:label] %>
+              </span>
+            <% end %>
+          <% end %>
+          <% if current_user.clinic %>
+            <% active = request.path.start_with?("/admin/clinics") %>
+            <%= link_to admin_clinic_path(current_user.clinic),
+                  class: "rounded-2xl p-5 shadow-sm hover:shadow-md transition-all active:scale-[0.98] flex items-center justify-center",
+                  style: "background-color: #{active ? '#C9B8A8' : '#ffffff'}" do %>
+              <span class="text-sm font-semibold uppercase tracking-wide" style="color: #5D4037">
+                Clínica
+              </span>
+            <% end %>
+          <% end %>
+        </div>
+
+        <main>
           <%= yield %>
         </main>
+
       </div>
     </div>
   </body>

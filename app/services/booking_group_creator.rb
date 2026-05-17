@@ -38,7 +38,7 @@ class BookingGroupCreator < ApplicationService
 
       group = BookingGroup.create!(
         clinic:         @clinic,
-        patient:        @user,
+        dentist:        @user,
         discount_rule:  pricing[:discount_rule],
         subtotal_cents: pricing[:subtotal_cents],
         discount_cents: pricing[:discount_cents],
@@ -51,8 +51,8 @@ class BookingGroupCreator < ApplicationService
           clinic:        @clinic,
           booking_group: group,
           availability:  av,
-          patient:       @user,
-          price_cents:   av.service.price_cents,
+          dentist:       @user,
+          price_cents:   av.price_cents,
           status:        "pending"
         )
         av.update!(status: "booked")

@@ -13,7 +13,7 @@ class Admin::ClinicsController < Admin::BaseController
     if @clinic.update(clinic_params)
       redirect_to admin_clinic_path(@clinic), notice: "Dados da clínica atualizados."
     else
-      render :edit, status: :unprocessable_entity
+      redirect_to admin_clinic_path(@clinic), alert: @clinic.errors.full_messages.to_sentence
     end
   end
 
