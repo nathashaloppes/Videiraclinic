@@ -108,7 +108,7 @@
     <p class="mt-1">Tente outro dia no calendário.</p>
   </div>
 <% else %>
-  <div id="availability-grid" class="flex flex-col gap-3 pb-24">
+  <div id="availability-grid" class="flex flex-col gap-3">
     <% @availabilities.each do |av| %>
       <%= render "shared/slot_card", availability: av %>
     <% end %>
