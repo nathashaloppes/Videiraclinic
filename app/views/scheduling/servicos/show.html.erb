@@ -29,10 +29,6 @@
   </p>
 </div>
 
-<%= turbo_frame_tag "cart-summary" do %>
-  <%= render "shared/cart_summary" %>
-<% end %>
-
 <% if @availabilities.empty? %>
   <div class="text-center py-12">
     <p class="text-sm" style="color: #8D6E63">Nenhum horário disponível nesta semana.</p>
@@ -49,4 +45,8 @@
       <% end %>
     <% end %>
   </div>
+<% end %>
+
+<%= turbo_frame_tag "cart-summary" do %>
+  <%= render "shared/cart_summary" %>
 <% end %>
