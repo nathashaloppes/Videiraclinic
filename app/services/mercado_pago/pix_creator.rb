@@ -1,6 +1,6 @@
 module MercadoPago
   class PixCreator < ApplicationService
-    MOCK_TOKEN_PREFIX = "TEST-000".freeze
+    MOCK_TOKEN_PREFIX = "TEST-".freeze
 
     def initialize(booking_group)
       @group = booking_group

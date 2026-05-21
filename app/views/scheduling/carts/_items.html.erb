@@ -6,7 +6,7 @@
 <% else %>
   <div class="flex flex-col gap-3 mb-6">
     <% cart_availabilities.each do |av| %>
-      <div id="cart-item-<%= av.id %>" class="card-sm flex items-center justify-between">
+      <div id="cart-item-<%= av.id %>" class="bg-white rounded-2xl shadow-sm p-4 flex items-center justify-between">
         <div>
           <p class="font-medium text-sm text-vdc-foreground"><%= av.label %></p>
           <p class="text-xs mt-1 text-vdc-secondary">
@@ -42,8 +42,11 @@
   </div>
 
   <div class="flex flex-col gap-3">
-    <%= link_to "Confirmar e pagar com Pix →", confirmar_reservas_path,
-          class: "btn-primary w-full text-center" %>
+    <%= link_to confirmar_reservas_path,
+          class: "block w-full py-3 rounded-full text-white text-sm font-medium text-center",
+          style: "background-color: #5D4037" do %>
+      Confirmar e gerar Pix →
+    <% end %>
     <%= button_to "Esvaziar carrinho", carrinho_path, method: :delete,
           class: "btn-outline w-full" %>
   </div>
