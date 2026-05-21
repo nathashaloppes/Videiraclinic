@@ -10,10 +10,14 @@
           <%= count %> <%= count == 1 ? "turno selecionado" : "turnos selecionados" %>
         </span>
         <div class="flex items-center gap-2">
-          <%= link_to carrinho_path, class: "btn-sm-outline flex-1 text-center" do %>
+          <%= link_to carrinho_path,
+                class: "btn-sm-outline flex-1 text-center",
+                data: { turbo_frame: "_top" } do %>
             Ver seleção
           <% end %>
-          <%= link_to confirmar_reservas_path, class: "btn-sm-primary flex-1 text-center" do %>
+          <%= link_to confirmar_reservas_path,
+                class: "btn-sm-primary flex-1 text-center",
+                data: { turbo_frame: "_top" } do %>
             Confirmar →
           <% end %>
         </div>
