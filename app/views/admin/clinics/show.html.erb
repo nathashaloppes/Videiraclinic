@@ -1,10 +1,9 @@
 <% content_for :title, "Clínica" %>
 
 <div class="flex items-center justify-between mb-4">
-  <h1 class="text-2xl font-semibold" style="color: #5D4037">Clínica</h1>
+  <h1 class="text-2xl font-medium" style="color: #5D4037">Clínica</h1>
   <button type="button" onclick="<%= open_modal('edit-clinic-modal') %>"
-          class="text-xs px-4 py-2 rounded-full border cursor-pointer"
-          style="border-color:#5D4037;color:#5D4037">
+          class="btn-sm-outline cursor-pointer">
     Editar
   </button>
 </div>
@@ -39,14 +38,14 @@
 </div>
 
 <div class="bg-white rounded-2xl shadow-sm p-5">
-  <h2 class="font-semibold mb-3" style="color: #5D4037">Estatísticas</h2>
+  <h2 class="font-medium mb-3" style="color: #5D4037">Estatísticas</h2>
   <div class="grid grid-cols-2 gap-3">
     <div class="rounded-2xl p-4 text-center" style="background-color: #fef8e1">
-      <p class="text-2xl font-bold" style="color: #5D4037"><%= @clinic.users.dentists.count %></p>
+      <p class="text-2xl font-medium" style="color: #5D4037"><%= @clinic.users.dentists.count %></p>
       <p class="text-xs mt-1" style="color: #8D6E63">Dentistas</p>
     </div>
     <div class="rounded-2xl p-4 text-center" style="background-color: #fef8e1">
-      <p class="text-2xl font-bold" style="color: #5D4037"><%= @clinic.availabilities.where(status: :available).count %></p>
+      <p class="text-2xl font-medium" style="color: #5D4037"><%= @clinic.availabilities.where(status: :available).count %></p>
       <p class="text-xs mt-1" style="color: #8D6E63">Turnos disponíveis</p>
     </div>
   </div>
@@ -72,7 +71,7 @@
       <% if @clinic.logo.attached? %>
         <div class="mb-2">
           <img src="<%= rails_blob_path(@clinic.logo, only_path: true) %>" alt="Logo atual"
-               class="h-12 w-12 rounded-xl object-contain shadow-sm" />
+               class="h-12 w-12 rounded-2xl object-contain shadow-sm" />
         </div>
       <% end %>
       <%= f.file_field :logo, accept: "image/*", class: "w-full text-sm text-vdc-foreground" %>

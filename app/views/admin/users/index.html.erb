@@ -1,6 +1,6 @@
 <% content_for :title, "Usuários" %>
 
-<h1 class="text-2xl font-semibold mb-4 text-vdc-primary">Usuários</h1>
+<h1 class="text-2xl font-medium mb-4 text-vdc-primary">Usuários</h1>
 
 <div class="card-sm mb-4">
   <%= form_with url: admin_users_path, method: :get, data: { turbo: false }, class: "flex gap-2" do |f| %>
@@ -31,8 +31,7 @@
         <div class="flex gap-2 shrink-0">
           <%= link_to "Ver", admin_user_path(u), class: "btn-xs-outline" %>
           <button type="button" onclick="<%= open_modal("edit-user-#{u.id}") %>"
-                  class="text-xs px-3 py-1 rounded-full border cursor-pointer"
-                  style="border-color:#5D4037;color:#5D4037">
+                  class="btn-xs-outline cursor-pointer">
             Editar
           </button>
         </div>

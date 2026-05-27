@@ -69,7 +69,7 @@
             <%= link_to item[:path],
                   class: "rounded-2xl p-5 shadow-sm hover:shadow-md transition-all active:scale-[0.98] flex items-center justify-center",
                   style: "background-color: #{active ? '#C9B8A8' : '#ffffff'}" do %>
-              <span class="text-sm font-semibold uppercase tracking-wide" style="color: #5D4037">
+              <span class="text-sm font-medium uppercase tracking-wide" style="color: #5D4037">
                 <%= item[:label] %>
               </span>
             <% end %>
@@ -79,7 +79,7 @@
             <%= link_to admin_clinic_path(current_user.clinic),
                   class: "rounded-2xl p-5 shadow-sm hover:shadow-md transition-all active:scale-[0.98] flex items-center justify-center",
                   style: "background-color: #{active ? '#C9B8A8' : '#ffffff'}" do %>
-              <span class="text-sm font-semibold uppercase tracking-wide" style="color: #5D4037">
+              <span class="text-sm font-medium uppercase tracking-wide" style="color: #5D4037">
                 Clínica
               </span>
             <% end %>

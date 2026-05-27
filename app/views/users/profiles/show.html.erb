@@ -2,9 +2,7 @@
 
 <div class="flex items-center justify-between mb-4">
   <h1 class="text-2xl font-medium" style="color: #5D4037">Meu perfil</h1>
-  <%= link_to "Editar", edit_perfil_path,
-        class: "text-xs px-4 py-2 rounded-full border",
-        style: "border-color: #5D4037; color: #5D4037" %>
+  <%= link_to "Editar", edit_perfil_path, class: "btn-sm-outline" %>
 </div>
 
 <div class="bg-white rounded-3xl shadow-lg p-6 mb-4">
@@ -40,7 +38,7 @@
 <% if credit_cents && credit_cents > 0 %>
   <div class="bg-white rounded-2xl shadow-sm p-5 mb-4 border-l-4" style="border-color: #388E3C">
     <p class="text-xs mb-1" style="color: #8D6E63">Saldo de créditos</p>
-    <p class="text-2xl font-bold" style="color: #388E3C">R$ <%= money(credit_cents) %></p>
+    <p class="text-2xl font-medium" style="color: #388E3C">R$ <%= money(credit_cents) %></p>
     <p class="text-xs mt-2" style="color: #8D6E63">Será aplicado automaticamente na próxima reserva.</p>
   </div>
 <% end %>
@@ -58,15 +56,12 @@
       <% recent.each do |group| %>
         <div class="flex items-center justify-between text-sm">
           <div class="flex items-center gap-2">
-            <span class="<%= booking_group_status_class(group.status) %>"
-                  style="<%= booking_group_status_style(group.status) %>">
-              <%= t("booking_group.status.#{group.status}", default: group.status.humanize) %>
+            <span class="<%= booking_group_status_badge(group.status) %>">
+              <%= t("booking_group.status.#{group.status}") %>
             </span>
             <span class="text-xs" style="color: #8D6E63"><%= l(group.created_at, format: :default) %></span>
           </div>
-          <%= link_to "Ver", reserva_path(group),
-                class: "text-xs px-3 py-1 rounded-full border",
-                style: "border-color: #5D4037; color: #5D4037" %>
+          <%= link_to "Ver", reserva_path(group), class: "btn-xs-outline" %>
         </div>
       <% end %>
     </div>

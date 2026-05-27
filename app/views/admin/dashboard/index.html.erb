@@ -1,19 +1,19 @@
 <% content_for :title, "Dashboard" %>
 
-<h1 class="text-2xl font-semibold mb-6" style="color: #5D4037">Dashboard</h1>
+<h1 class="text-2xl font-medium mb-6" style="color: #5D4037">Dashboard</h1>
 
 <div class="grid grid-cols-2 gap-3 mb-6">
   <div class="bg-white rounded-2xl shadow-sm p-4">
     <p class="text-xs mb-1" style="color: #8D6E63">Agendamentos hoje</p>
-    <p class="text-3xl font-bold" style="color: #5D4037"><%= @todays_bookings %></p>
+    <p class="text-2xl font-medium" style="color: #5D4037"><%= @todays_bookings %></p>
   </div>
   <div class="bg-white rounded-2xl shadow-sm p-4">
     <p class="text-xs mb-1" style="color: #8D6E63">Pag. pendentes</p>
-    <p class="text-3xl font-bold" style="color: #F57F17"><%= @pending_payments %></p>
+    <p class="text-2xl font-medium" style="color: #F57F17"><%= @pending_payments %></p>
   </div>
   <div class="bg-white rounded-2xl shadow-sm p-4 col-span-2">
     <p class="text-xs mb-1" style="color: #8D6E63">Receita do mês</p>
-    <p class="text-3xl font-bold" style="color: #388E3C">
+    <p class="text-2xl font-medium" style="color: #388E3C">
       R$ <%= number_with_precision(@monthly_revenue, precision: 2, delimiter: ".", separator: ",") %>
     </p>
   </div>
@@ -39,32 +39,32 @@
 
 <div class="grid grid-cols-2 gap-3">
   <%= link_to admin_availabilities_path,
-        class: "bg-white rounded-2xl shadow-sm p-4 hover:shadow-md transition-all active:scale-[0.98]" do %>
-    <h2 class="text-sm font-semibold mb-1" style="color: #5D4037">Horários</h2>
+        class: "card-link" do %>
+    <h2 class="text-sm font-medium mb-1" style="color: #5D4037">Horários</h2>
     <p class="text-xs" style="color: #8D6E63">Criar e editar disponibilidades</p>
   <% end %>
 
   <%= link_to admin_bookings_path,
-        class: "bg-white rounded-2xl shadow-sm p-4 hover:shadow-md transition-all active:scale-[0.98]" do %>
-    <h2 class="text-sm font-semibold mb-1" style="color: #5D4037">Reservas</h2>
+        class: "card-link" do %>
+    <h2 class="text-sm font-medium mb-1" style="color: #5D4037">Reservas</h2>
     <p class="text-xs" style="color: #8D6E63">Ver todas as reservas</p>
   <% end %>
 
   <%= link_to admin_users_path,
-        class: "bg-white rounded-2xl shadow-sm p-4 hover:shadow-md transition-all active:scale-[0.98]" do %>
-    <h2 class="text-sm font-semibold mb-1" style="color: #5D4037">Usuários</h2>
+        class: "card-link" do %>
+    <h2 class="text-sm font-medium mb-1" style="color: #5D4037">Usuários</h2>
     <p class="text-xs" style="color: #8D6E63">Dados das dentistas</p>
   <% end %>
 
   <%= link_to admin_discount_rules_path,
-        class: "bg-white rounded-2xl shadow-sm p-4 hover:shadow-md transition-all active:scale-[0.98]" do %>
-    <h2 class="text-sm font-semibold mb-1" style="color: #5D4037">Descontos</h2>
+        class: "card-link" do %>
+    <h2 class="text-sm font-medium mb-1" style="color: #5D4037">Descontos</h2>
     <p class="text-xs" style="color: #8D6E63">Regras de desconto</p>
   <% end %>
 
   <%= link_to admin_services_path,
-        class: "bg-white rounded-2xl shadow-sm p-4 hover:shadow-md transition-all active:scale-[0.98] col-span-2" do %>
-    <h2 class="text-sm font-semibold mb-1" style="color: #5D4037">Serviços</h2>
+        class: "card-link col-span-2" do %>
+    <h2 class="text-sm font-medium mb-1" style="color: #5D4037">Serviços</h2>
     <p class="text-xs" style="color: #8D6E63">Gerenciar catálogo de serviços</p>
   <% end %>
 </div>

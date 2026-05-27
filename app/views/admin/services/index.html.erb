@@ -1,10 +1,8 @@
 <% content_for :title, "Serviços" %>
 
 <div class="flex items-center justify-between mb-4">
-  <h1 class="text-2xl font-semibold" style="color: #5D4037">Serviços</h1>
-  <%= link_to "+ Novo", new_admin_service_path,
-        class: "text-xs px-4 py-2 rounded-full text-white",
-        style: "background-color: #5D4037" %>
+  <h1 class="text-2xl font-medium" style="color: #5D4037">Serviços</h1>
+  <%= link_to "+ Novo", new_admin_service_path, class: "btn-sm-primary" %>
 </div>
 
 <% if @services.empty? %>
@@ -25,17 +23,13 @@
           </p>
         </div>
         <div class="flex items-center gap-2">
-          <span class="text-xs px-2 py-1 rounded-full"
-                style="<%= service.active? ? 'background-color: #E8F5E9; color: #388E3C' : 'background-color: #F5F5F5; color: #757575' %>">
+          <span class="<%= service.active? ? 'badge-success' : 'badge-neutral' %>">
             <%= service.active? ? "Ativo" : "Inativo" %>
           </span>
-          <%= link_to "Editar", edit_admin_service_path(service),
-                class: "text-xs px-3 py-1 rounded-full border",
-                style: "border-color: #5D4037; color: #5D4037" %>
+          <%= link_to "Editar", edit_admin_service_path(service), class: "btn-xs-outline" %>
           <% if service.active? %>
             <%= button_to "✕", admin_service_path(service), method: :delete,
-                  class: "text-xs px-3 py-1 rounded-full border",
-                  style: "border-color: #d4183d; color: #d4183d",
+                  class: "btn-xs-danger",
                   data: { turbo_confirm: "Desativar este serviço? Horários futuros não serão afetados." } %>
           <% end %>
         </div>

@@ -13,7 +13,7 @@
           <%= l(av.date, format: :default) %> · <%= av.starts_at.strftime("%H:%M") %>–<%= av.ends_at.strftime("%H:%M") %>
         </p>
       </div>
-      <span class="text-sm font-semibold" style="color: #5D4037">
+      <span class="text-sm font-medium" style="color: #5D4037">
         R$ <%= money(av.price_cents) %>
       </span>
     </div>
@@ -27,7 +27,7 @@
   </div>
 
   <% if @pricing[:discount_cents] > 0 %>
-    <div class="flex justify-between text-sm mb-3 px-3 py-2 rounded-xl"
+    <div class="flex justify-between text-sm mb-3 px-3 py-2 rounded-2xl"
          style="background-color: #E8F5E9; color: #388E3C">
       <span>Desconto (<%= @pricing[:discount_percent] %>%)</span>
       <span>− R$ <%= money(@pricing[:discount_cents]) %></span>
@@ -37,7 +37,7 @@
   <% credit_balance = Credit.balance_for(user: current_user, clinic: current_user.clinic) %>
   <% credit_applied = [credit_balance, @pricing[:total_cents]].min %>
   <% if credit_applied > 0 %>
-    <div class="flex justify-between text-sm mb-3 px-3 py-2 rounded-xl"
+    <div class="flex justify-between text-sm mb-3 px-3 py-2 rounded-2xl"
          style="background-color: #E8F5E9; color: #388E3C">
       <span>Crédito aplicado</span>
       <span>− R$ <%= money(credit_applied) %></span>
@@ -45,19 +45,16 @@
   <% end %>
 
   <% amount_due = @pricing[:total_cents] - credit_applied %>
-  <div class="flex justify-between font-semibold border-t pt-4" style="border-color: #E0E0E0">
+  <div class="flex justify-between font-medium border-t pt-4" style="border-color: #E0E0E0">
     <span style="color: #3E2723"><%= amount_due.zero? ? "Total" : "Total a pagar via Pix" %></span>
-    <span class="text-xl font-bold" style="color: #5D4037">
+    <span class="text-xl font-medium" style="color: #5D4037">
       R$ <%= money(amount_due) %>
     </span>
   </div>
 </div>
 
-<%= button_to confirmar_reservas_path, method: :post,
-      class: "w-full py-3 rounded-full text-white text-sm font-medium",
-      style: "background-color: #5D4037" do %>
-  <%= amount_due.zero? ? "Confirmar reserva →" : "Confirmar e gerar Pix →" %>
-<% end %>
+<%= button_to (amount_due.zero? ? "Confirmar reserva →" : "Confirmar e gerar Pix →"),
+      confirmar_reservas_path, method: :post, class: "btn-cta" %>
 
 <p class="mt-4 text-xs text-center" style="color: #8D6E63">
   Após confirmar, você terá <%= ENV.fetch("PAYMENT_EXPIRY_MINUTES", 30) %> minutos para concluir o pagamento via Pix.

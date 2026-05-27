@@ -5,9 +5,8 @@
 <div class="card mb-4">
   <div class="flex items-center justify-between mb-5">
     <h1 class="text-xl font-medium text-vdc-primary">Reserva</h1>
-    <span class="<%= booking_group_status_class(@booking_group.status) %>"
-          style="<%= booking_group_status_style(@booking_group.status) %>">
-      <%= t("booking_group.status.#{@booking_group.status}", default: @booking_group.status.humanize) %>
+    <span class="<%= booking_group_status_badge(@booking_group.status) %>">
+      <%= t("booking_group.status.#{@booking_group.status}") %>
     </span>
   </div>
 
@@ -16,37 +15,38 @@
     <p><strong class="text-vdc-foreground">Criado em:</strong> <%= l(@booking_group.created_at, format: :default) %></p>
   </div>
 
-  <div class="flex flex-col divide-y divide-[#E0E0E0]">
-    <% @booking_group.bookings.includes(:availability).each do |b| %>
-      <div class="py-3 flex justify-between items-start">
-        <div>
-          <p class="font-medium text-sm text-vdc-foreground"><%= b.availability.label %></p>
-          <p class="text-xs mt-1 text-vdc-secondary">
-            <%= l(b.availability.date, format: :default) %> ·
-            <%= b.availability.starts_at.strftime("%H:%M") %>–<%= b.availability.ends_at.strftime("%H:%M") %>
-          </p>
-          <span class="text-xs" style="color: <%= b.confirmed? ? '#388E3C' : '#8D6E63' %>"><%= t("booking.status.#{b.status}", default: b.status.humanize) %></span>
-        </div>
-        <span class="text-sm font-medium text-vdc-primary">R$ <%= money(b.price_cents) %></span>
-      </div>
-    <% end %>
-  </div>
+</div>
 
-  <div class="border-t pt-4 mt-2 flex flex-col gap-2 text-sm" style="border-color: #E0E0E0">
-    <div class="flex justify-between text-vdc-secondary">
-      <span>Subtotal</span>
-      <span>R$ <%= money(@booking_group.subtotal_cents) %></span>
-    </div>
-    <% if @booking_group.discount_cents > 0 %>
-      <div class="flex justify-between" style="color: #388E3C">
-        <span>Desconto</span>
-        <span>− R$ <%= money(@booking_group.discount_cents) %></span>
+<div class="flex flex-col gap-3 mb-4">
+  <% @booking_group.bookings.includes(:availability).each do |b| %>
+    <div class="bg-white rounded-2xl shadow-sm p-4 flex justify-between items-start">
+      <div>
+        <p class="font-medium text-sm text-vdc-foreground"><%= b.availability.label %></p>
+        <p class="text-xs mt-1 text-vdc-secondary">
+          <%= l(b.availability.date, format: :default) %> ·
+          <%= b.availability.starts_at.strftime("%H:%M") %>–<%= b.availability.ends_at.strftime("%H:%M") %>
+        </p>
+        <span class="text-xs" style="color: <%= b.confirmed? ? '#388E3C' : '#8D6E63' %>"><%= t("booking.status.#{b.status}", default: b.status.humanize) %></span>
       </div>
-    <% end %>
-    <div class="flex justify-between font-medium border-t pt-2 mt-1" style="border-color: #E0E0E0">
-      <span class="text-vdc-foreground">Total</span>
-      <span class="text-xl font-medium text-vdc-primary">R$ <%= money(@booking_group.total_cents) %></span>
+      <span class="text-sm font-medium text-vdc-primary">R$ <%= money(b.price_cents) %></span>
     </div>
+  <% end %>
+</div>
+
+<div class="bg-white rounded-3xl shadow-lg p-6 mb-4 flex flex-col gap-2 text-sm">
+  <div class="flex justify-between text-vdc-secondary">
+    <span>Subtotal</span>
+    <span>R$ <%= money(@booking_group.subtotal_cents) %></span>
+  </div>
+  <% if @booking_group.discount_cents > 0 %>
+    <div class="flex justify-between" style="color: #388E3C">
+      <span>Desconto</span>
+      <span>− R$ <%= money(@booking_group.discount_cents) %></span>
+    </div>
+  <% end %>
+  <div class="flex justify-between font-medium border-t pt-3 mt-1" style="border-color: #E0E0E0">
+    <span class="text-vdc-foreground">Total</span>
+    <span class="text-xl font-medium text-vdc-primary">R$ <%= money(@booking_group.total_cents) %></span>
   </div>
 </div>
 
@@ -55,9 +55,8 @@
   <div class="card-md mb-4">
     <h2 class="font-medium mb-3 text-vdc-primary">Pagamento</h2>
     <div class="flex flex-col gap-1 text-sm text-vdc-secondary">
-      <p>Status: <span class="text-xs px-2 py-1 rounded-full font-medium"
-                       style="<%= p.paid? ? 'background-color: #E8F5E9; color: #388E3C' : p.expired? ? 'background-color: #FFEBEE; color: #d4183d' : 'background-color: #FFF9C4; color: #F57F17' %>">
-        <%= t("payment.status.#{p.status}", default: p.status.humanize) %>
+      <p>Status: <span class="<%= payment_status_badge(p.status) %>">
+        <%= t("payment.status.#{p.status}") %>
       </span></p>
       <p>Gateway ID: <span class="font-mono text-xs text-vdc-foreground"><%= p.gateway_id %></span></p>
       <% if p.paid_at %><p>Pago em: <%= l(p.paid_at, format: :default) %></p><% end %>

@@ -8,10 +8,10 @@
          style="background-color: #F5F5F5">
       <div class="flex items-center justify-between">
         <div>
-          <p class="font-semibold text-sm" style="color: #BDBDBD"><%= availability.label %></p>
+          <p class="font-medium text-sm" style="color: #BDBDBD"><%= availability.label %></p>
           <p class="text-xs mt-0.5" style="color: #BDBDBD"><%= time_range %> · Reservado</p>
         </div>
-        <p class="text-sm font-bold" style="color: #BDBDBD">R$ <%= money(availability.price_cents) %></p>
+        <p class="text-sm font-medium" style="color: #BDBDBD">R$ <%= money(availability.price_cents) %></p>
       </div>
     </div>
 
@@ -22,10 +22,10 @@
           style: "background-color: #C9B8A8" do %>
       <div class="flex items-center justify-between">
         <div>
-          <p class="font-semibold text-sm" style="color: #3E2723"><%= availability.label %></p>
+          <p class="font-medium text-sm" style="color: #3E2723"><%= availability.label %></p>
           <p class="text-xs mt-0.5" style="color: #5D4037"><%= time_range %> · Toque para remover</p>
         </div>
-        <p class="text-sm font-bold" style="color: #5D4037">R$ <%= money(availability.price_cents) %></p>
+        <p class="text-sm font-medium" style="color: #5D4037">R$ <%= money(availability.price_cents) %></p>
       </div>
     <% end %>
 
@@ -36,10 +36,10 @@
           style: "background-color: #ffffff" do %>
       <div class="flex items-center justify-between">
         <div>
-          <p class="font-semibold text-sm" style="color: #3E2723"><%= availability.label %></p>
+          <p class="font-medium text-sm" style="color: #3E2723"><%= availability.label %></p>
           <p class="text-xs mt-0.5" style="color: #8D6E63"><%= time_range %></p>
         </div>
-        <p class="text-sm font-bold" style="color: #5D4037">R$ <%= money(availability.price_cents) %></p>
+        <p class="text-sm font-medium" style="color: #5D4037">R$ <%= money(availability.price_cents) %></p>
       </div>
     <% end %>
   <% end %>

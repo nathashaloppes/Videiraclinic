@@ -6,15 +6,14 @@
   <div class="flex items-center gap-3 mb-5">
     <%= render "shared/avatar", user: @user, size: "lg" %>
     <div>
-      <h1 class="text-xl font-semibold" style="color: #5D4037"><%= @user.name %></h1>
+      <h1 class="text-xl font-medium" style="color: #5D4037"><%= @user.name %></h1>
       <span class="text-xs px-2 py-0.5 rounded-full"
             style="<%= @user.owner? ? 'background-color:#fef8e1;color:#5D4037' : 'background-color:#F5F5F5;color:#757575' %>">
         <%= @user.role %>
       </span>
     </div>
     <button type="button" onclick="<%= open_modal('edit-user-modal') %>"
-            class="ml-auto text-xs px-3 py-2 rounded-full border cursor-pointer"
-            style="border-color:#5D4037;color:#5D4037">
+            class="btn-sm-outline ml-auto cursor-pointer">
       Editar
     </button>
   </div>
@@ -30,7 +29,7 @@
 </div>
 
 <div class="bg-white rounded-2xl shadow-sm p-5 mb-4">
-  <h2 class="font-semibold mb-4" style="color: #5D4037">Últimas reservas</h2>
+  <h2 class="font-medium mb-4" style="color: #5D4037">Últimas reservas</h2>
   <% if @booking_groups.empty? %>
     <p class="text-sm" style="color: #8D6E63">Sem reservas.</p>
   <% else %>
@@ -38,19 +37,16 @@
       <% @booking_groups.each do |group| %>
         <div class="flex items-center justify-between text-sm">
           <div>
-            <span class="<%= booking_group_status_class(group.status) %>"
-                  style="<%= booking_group_status_style(group.status) %>">
-              <%= group.status %>
+            <span class="<%= booking_group_status_badge(group.status) %>">
+              <%= t("booking_group.status.#{group.status}") %>
             </span>
             <span class="text-xs ml-2" style="color: #8D6E63">
               <%= pluralize(group.bookings.size, "horário", "horários") %> · <%= l(group.created_at, format: :default) %>
             </span>
           </div>
           <div class="flex items-center gap-2">
-            <span class="text-sm font-semibold" style="color: #5D4037">R$ <%= money(group.total_cents) %></span>
-            <%= link_to "Ver", admin_booking_path(group),
-                  class: "text-xs px-2 py-1 rounded-full border",
-                  style: "border-color:#5D4037;color:#5D4037" %>
+            <span class="text-sm font-medium" style="color: #5D4037">R$ <%= money(group.total_cents) %></span>
+            <%= link_to "Ver", admin_booking_path(group), class: "btn-xs-outline" %>
           </div>
         </div>
       <% end %>
@@ -60,7 +56,7 @@
 
 <% unless @versions.empty? %>
   <div class="bg-white rounded-2xl shadow-sm p-5">
-    <h2 class="font-semibold mb-4" style="color: #5D4037">Histórico</h2>
+    <h2 class="font-medium mb-4" style="color: #5D4037">Histórico</h2>
     <div class="flex flex-col gap-3">
       <% @versions.each do |v| %>
         <div class="text-xs border-l-2 pl-3" style="border-color: #C9B8A8">

@@ -14,7 +14,7 @@
           </p>
         </div>
         <div class="flex items-center gap-3">
-          <span class="text-sm font-semibold text-vdc-primary">
+          <span class="text-sm font-medium text-vdc-primary">
             R$ <%= money(av.price_cents) %>
           </span>
           <%= button_to remove_from_carrinho_path(availability_id: av.id),
@@ -34,19 +34,15 @@
       <span>R$ <%= money(subtotal_cents) %></span>
     </div>
     <div class="border-t pt-3 flex justify-between" style="border-color: #E0E0E0">
-      <span class="font-semibold text-vdc-foreground">Total</span>
-      <span class="text-xl font-bold text-vdc-primary">
+      <span class="font-medium text-vdc-foreground">Total</span>
+      <span class="text-xl font-medium text-vdc-primary">
         R$ <%= money(subtotal_cents) %>
       </span>
     </div>
   </div>
 
   <div class="flex flex-col gap-3">
-    <%= link_to confirmar_reservas_path,
-          class: "block w-full py-3 rounded-full text-white text-sm font-medium text-center",
-          style: "background-color: #5D4037" do %>
-      Confirmar e gerar Pix →
-    <% end %>
+    <%= link_to "Confirmar e gerar Pix →", confirmar_reservas_path, class: "btn-cta" %>
     <%= button_to "Esvaziar carrinho", carrinho_path, method: :delete,
           class: "btn-outline w-full" %>
   </div>

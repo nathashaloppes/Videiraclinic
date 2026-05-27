@@ -9,17 +9,33 @@ Mantenha-o curto e prático — instruções aqui são **sempre** seguidas.
 
 **Antes de criar ou modificar qualquer view (`*.html.erb`), modal, partial ou estilo:**
 
-1. Consulte `docs/03_design/TEMPLATE_TELA_E_MODAL.md` — ele tem esqueletos prontos para tela e modal, classes utilitárias e checklist.
-2. Consulte `docs/03_design/DESIGN_SYSTEM.md` quando precisar de detalhes de tokens, cores ou componentes.
-3. Verifique se a mudança que vai fazer está **em conformidade** com o template:
-   - Cards com `rounded-2xl`/`rounded-3xl` (nunca `rounded-md`/`rounded-lg`)
+1. Abrir `docs/03_design/README.md` para confirmar o fluxo recomendado.
+2. Consultar `docs/03_design/CATALOGO_TELAS.md` para encontrar uma tela equivalente já existente — abrir essa view como ponto de partida.
+3. Copiar o esqueleto correspondente (Variação A/B/C/D/E) de `docs/03_design/TEMPLATE_TELA_E_MODAL.md`.
+4. Usar classes utilitárias e helpers documentados em `docs/03_design/DESIGN_SYSTEM.md` — **nunca recriar inline** o que já existe como classe `.btn-*` / `.card-*` / `.badge-*` / `.btn-cta` / `.card-link` ou como helper Ruby (`booking_group_status_badge`, `payment_status_badge`, `money`, `open_modal`).
+5. Validar a conformidade da mudança:
+   - Cards com `rounded-2xl`/`rounded-3xl` (nunca `rounded-md`/`rounded-lg`/`rounded-xl`)
    - Botões com `rounded-full` ou classes `.btn-*`
-   - Sem `text-blue-*`, `bg-blue-*`, `text-gray-*` do Tailwind default
+   - Tipografia sempre `font-medium` (nunca `font-semibold`/`font-bold`)
+   - Sem `text-blue-*`, `bg-blue-*`, `text-gray-*`, `hover:bg-gray-*`, `hover:bg-red-*` do Tailwind default
    - Paleta VDC apenas (marrom `#5D4037`, creme `#fef8e1`, secundário `#8D6E63`, etc.)
-   - Inputs em formulários no padrão "card branco com input transparente"
-   - Status enums via `t("modelo.status.#{obj.status}")`
-4. Se uma convenção nova surgir durante a mudança (algo que se repete ou padroniza algo novo), **atualize o template** `TEMPLATE_TELA_E_MODAL.md` no mesmo commit.
-5. Se a mudança **divergir intencionalmente** do template, explique o porquê antes de aplicar.
+   - Inputs em formulários no padrão "card branco com input transparente" ou `.input-field`
+   - Status enums via `t("modelo.status.#{obj.status}")` + helper `*_status_badge(...)` para a classe
+6. **Após criar uma tela nova**, adicionar uma linha em `CATALOGO_TELAS.md` com a view, o tipo de padrão e observações.
+7. Se uma convenção nova surgir (padrão que se repete em 3+ lugares), **adicionar classe utilitária** em `app/assets/tailwind/application.css` e **atualizar `DESIGN_SYSTEM.md` e `TEMPLATE_TELA_E_MODAL.md`** no mesmo commit.
+8. Se a mudança **divergir intencionalmente** do template, explique o porquê antes de aplicar.
+
+---
+
+## Mapa de docs/03_design/
+
+| Quando | Abrir |
+|---|---|
+| Comecei uma tarefa nova de UI | `README.md` |
+| Vou criar/alterar uma tela | `TEMPLATE_TELA_E_MODAL.md` |
+| Procuro um exemplo equivalente | `CATALOGO_TELAS.md` |
+| Esqueci uma classe/cor/helper | `DESIGN_SYSTEM.md` |
+| Curiosidade histórica | `ARCHIVE_RESTYLING.md` (não é guia) |
 
 ---
 
@@ -27,10 +43,13 @@ Mantenha-o curto e prático — instruções aqui são **sempre** seguidas.
 
 Sempre nessa ordem:
 
-1. **Ler o template** — confirma o padrão atual.
-2. **Aplicar a mudança** seguindo o esqueleto correspondente (tela/modal/formulário/listagem).
-3. **Rodar o checklist final** do template mentalmente antes de finalizar.
-4. **Se identificou um padrão novo** (algo que pode se repetir), atualizar o template.
+1. **Identificar o tipo da tela** (formulário / listagem / detalhe / dashboard / página estática).
+2. **Procurar tela similar** em `CATALOGO_TELAS.md` e usar como base.
+3. **Aplicar a mudança** seguindo o esqueleto correspondente do `TEMPLATE_TELA_E_MODAL.md`.
+4. **Usar classes/helpers existentes** — buscar primeiro em `DESIGN_SYSTEM.md` antes de escrever Tailwind ou `style` inline.
+5. **Rodar o checklist final** do template mentalmente antes de finalizar.
+6. **Atualizar `CATALOGO_TELAS.md`** se a tela é nova.
+7. **Se identificou um padrão novo** (repete 3+ vezes), extrair em `application.css` e atualizar os docs.
 
 ---
 

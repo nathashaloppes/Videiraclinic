@@ -1,3 +1,18 @@
+# ARCHIVE — Restyling inicial (concluído)
+
+> **⚠️ HISTÓRICO — NÃO USE COMO GUIA**
+>
+> Este documento registra o plano do **restyling inicial** do `videira_dental` para o Design System (mai/2026). Já está concluído.
+>
+> Para criar telas novas hoje, use:
+> - [`TEMPLATE_TELA_E_MODAL.md`](TEMPLATE_TELA_E_MODAL.md) — esqueletos prontos
+> - [`DESIGN_SYSTEM.md`](DESIGN_SYSTEM.md) — tokens, classes, helpers
+> - [`CATALOGO_TELAS.md`](CATALOGO_TELAS.md) — telas existentes para referência
+>
+> **Conteúdo original abaixo** (preservado por contexto histórico).
+
+---
+
 # RESTYLING_TASKS.md — Aplicar Design System ao videira_dental
 
 > **Objetivo:** reestilizar **todas** as telas do `videira_dental` para baterem com `vdc_final/docs/DESIGN_SYSTEM.md`.

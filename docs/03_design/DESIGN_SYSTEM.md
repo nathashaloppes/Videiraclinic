@@ -1,581 +1,193 @@
-# Videira Dental Clinic — DESIGN_SYSTEM.md
-> Design system extraído do código React/Figma.
-> Referência para recriar todas as telas em Rails + ERB + Tailwind CSS.
-> Última atualização: Abril 2026
+# DESIGN_SYSTEM — Videira Dental
+
+> Referência de tokens, classes utilitárias e helpers do projeto.
+> Para **esqueletos de tela e modal**, ver [`TEMPLATE_TELA_E_MODAL.md`](TEMPLATE_TELA_E_MODAL.md).
+> Para **mapa de telas existentes**, ver [`CATALOGO_TELAS.md`](CATALOGO_TELAS.md).
 
 ---
 
-## 1. Identidade Visual
+## 1 · Identidade visual
 
-**Nome do produto:** Videira Dental Clinic
-**Estética:** Warm, orgânica, confiável — tons terrosos com fundo creme
-**Fonte:** `Prompt` (Google Fonts) — pesos 300, 400, 500, 600, 700
-**Border radius padrão:** `0.625rem` (10px) — arredondado mas não excessivo
-**Layout base:** `max-w-md mx-auto px-4` — mobile-first, centralizado, máx 448px
+| Item | Valor |
+|---|---|
+| **Estética** | Warm, orgânica, confiável — tons terrosos com fundo creme |
+| **Fonte** | `Prompt` (Google Fonts), pesos 300, 400, 500, 600, 700 — **padrão sempre 500 (`font-medium`)** |
+| **Border radius padrão** | `rounded-2xl` (cards secundários), `rounded-3xl` (cards principais), `rounded-full` (botões/badges/pills) |
+| **Layout base** | `max-w-md mx-auto px-4 py-6` — mobile-first, máx 448px |
+| **Fundo da aplicação** | `#fef8e1` (creme) — definido no `body` em `application.css` |
 
 ---
 
-## 2. Tokens de Cor (CSS Variables)
+## 2 · Paleta (tokens)
 
-Copiar exatamente para `app/assets/stylesheets/application.css`:
+Definida em `app/assets/tailwind/application.css` como CSS variables. Hex inline aceito quando necessário.
 
-```css
-@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
+| Token | Hex | Uso |
+|---|---|---|
+| `--color-vdc-background` | `#fef8e1` | Fundo de toda a página |
+| `--color-vdc-foreground` | `#3E2723` | Texto principal escuro |
+| `--color-vdc-primary` | `#5D4037` | Botões, títulos, ações primárias |
+| `--color-vdc-secondary` | `#8D6E63` | Texto secundário, ícones |
+| `--color-vdc-accent` | `#C9B8A8` | Slots selecionados, estados ativos |
+| `--color-vdc-card` | `#ffffff` | Fundo de cards |
+| `--color-vdc-border` | `#E0E0E0` | Bordas de inputs e separadores |
+| `--color-vdc-destructive` | `#d4183d` | Erros, ações destrutivas |
+| `--color-vdc-success` | `#388E3C` | Confirmações, descontos |
+| `--color-vdc-success-bg` | `#E8F5E9` | Fundo de badges de sucesso |
+| — | `#32BCAD` | Verde Pix (exclusivo do botão/ícone Pix) |
+| — | `#FFF9C4` / `#F57F17` | Badge warning (bg/texto) |
+| — | `#FFEBEE` | Badge danger (bg) |
+| — | `#F5F5F5` / `#757575` | Badge neutral / estados desabilitados |
+| — | `#BDBDBD` | Texto em estados desabilitados |
 
-:root {
-  /* Cores principais */
-  --background:        #fef8e1;  /* fundo creme — usado em TODA a aplicação */
-  --foreground:        #3E2723;  /* texto principal — marrom escuro */
-  --primary:           #5D4037;  /* marrom principal — botões, títulos, ações */
-  --primary-foreground:#ffffff;  /* texto sobre primary */
-  --secondary:         #8D6E63;  /* marrom médio — textos secundários, ícones */
-  --secondary-foreground: #ffffff;
-  --accent:            #C9B8A8;  /* bege acinzentado — slots selecionados */
-  --accent-foreground: #3E2723;
+**Para colar em inline `style`:**
 
-  /* Cards e superfícies */
-  --card:              #ffffff;  /* fundo dos cards */
-  --card-foreground:   #3E2723;
-  --muted:             #fef8e1;  /* mesma cor do background */
-  --muted-foreground:  #8D6E63;
-
-  /* Bordas e inputs */
-  --border:            rgba(0, 0, 0, 0.1);
-  --input-background:  #ffffff;
-  --border-color:      #E0E0E0;  /* bordas de inputs e separadores */
-
-  /* Estados */
-  --destructive:       #d4183d;  /* erros e cancelamentos */
-  --destructive-foreground: #ffffff;
-  --success:           #388E3C;  /* confirmações e descontos */
-  --success-bg:        #E8F5E9;  /* fundo de badges de sucesso */
-
-  /* Pix */
-  --pix-color:         #32BCAD;  /* verde Pix — exclusivo para botão/ícone Pix */
-
-  /* Sidebar admin */
-  --sidebar-primary:   #5D4037;
-  --sidebar-accent:    #fef8e1;
-  --sidebar-accent-foreground: #3E2723;
-
-  /* Raio */
-  --radius:            0.625rem;
-  --radius-sm:         calc(var(--radius) - 4px);
-  --radius-md:         calc(var(--radius) - 2px);
-  --radius-lg:         var(--radius);
-  --radius-xl:         calc(var(--radius) + 4px);
-}
-
-* { box-sizing: border-box; }
-
-body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: 'Prompt', sans-serif;
-  font-size: 16px;
-}
-
-/* Prevenir zoom em mobile em inputs */
-@media screen and (max-width: 768px) {
-  input, select, textarea { font-size: 16px !important; }
-}
+```
+Texto principal escuro    #3E2723
+Texto título marrom       #5D4037
+Texto secundário          #8D6E63
+Fundo creme               #fef8e1
+Slot selecionado          #C9B8A8
+Borda de input            #E0E0E0
+Sucesso (verde)           #388E3C
+Sucesso bg                #E8F5E9
+Erro/destructive          #d4183d
+Pix                       #32BCAD
 ```
 
 ---
 
-## 3. Classes Tailwind mais usadas no projeto
+## 3 · Classes utilitárias do projeto
 
-### Layout base de todas as páginas
-```erb
-<div class="min-h-screen overflow-x-hidden" style="background-color: #fef8e1">
-  <div class="max-w-md mx-auto px-4 py-6">
-    <!-- conteúdo -->
-  </div>
-</div>
-```
+Definidas em `app/assets/tailwind/application.css` (camada `@layer components`). **Use estas classes em vez de reescrever inline.**
 
-### Cards principais (white, rounded-3xl)
-```erb
-<div class="bg-white rounded-3xl p-6 shadow-lg">
-  <!-- conteúdo do card -->
-</div>
-```
+### Cards
 
-### Cards secundários (white, rounded-2xl)
-```erb
-<div class="bg-white rounded-2xl p-4 shadow-sm">
-  <!-- conteúdo -->
-</div>
-```
+| Classe | Equivalente Tailwind | Quando usar |
+|---|---|---|
+| `.card` | `bg-white rounded-3xl shadow-lg p-6` | Card principal de show, formulário grande |
+| `.card-md` | `bg-white rounded-2xl shadow-sm p-5` | Card secundário com mais respiro |
+| `.card-sm` | `bg-white rounded-2xl shadow-sm p-4` | Card de listagem, item de feed |
+| `.card-link` | `.card-sm` + `hover:shadow-md transition-all active:scale-[0.98]` + `block` | **Sempre** em `link_to`/`button_to` que envolve um card de listagem |
 
-### Botão primário (marrom, rounded-full)
-```erb
-<button class="w-full py-3 rounded-full text-white text-sm font-medium"
-        style="background-color: #5D4037">
-  Texto do botão
-</button>
-```
+### Botões
 
-### Botão outline (borda marrom)
-```erb
-<button class="px-6 py-3 rounded-full border-2 text-sm font-medium"
-        style="border-color: #5D4037; color: #5D4037">
-  Texto do botão
-</button>
-```
+| Classe | Quando usar |
+|---|---|
+| `.btn-primary` | Botão marrom pill — par com `.btn-outline` em formulários |
+| `.btn-outline` | Botão outline marrom — par com `.btn-primary` |
+| `.btn-cta` | **CTA full-width** (pill marrom largura total) — "Confirmar →", "Gerar Pix", etc. |
+| `.btn-danger` | Botão **outline** vermelho — destrutivo leve |
+| `.btn-danger-filled` | Botão **sólido** vermelho — confirmar exclusão em modais (par com `.btn-outline`) |
+| `.btn-sm-primary` / `.btn-sm-outline` | Versões menores — headers de admin ("+ Adicionar", "Editar") |
+| `.btn-xs-outline` / `.btn-xs-danger` | Versões mínimas — botões inline em linhas de listagem |
 
-### Botão voltar (chevron)
-```erb
-<%= link_to root_path, class: "mb-8 p-2 hover:bg-white/50 rounded-full inline-block" do %>
-  <svg class="w-6 h-6" style="color: #5D4037" ...><!-- ChevronLeft --></svg>
-<% end %>
-```
+### Inputs e labels
 
-### Input padrão
-```erb
-<input type="text"
-       class="w-full px-4 py-3 rounded-2xl border text-sm bg-white"
-       style="border-color: #E0E0E0; color: #3E2723"
-       placeholder="Placeholder*" />
-```
+| Classe | Quando usar |
+|---|---|
+| `.input-field` | Input retangular com borda — use em formulários "labelados" |
+| `.label` | Label de input acima do campo |
 
-### Input com ícone (ex: senha com olho)
-```erb
-<div class="relative">
-  <input type="password"
-         class="w-full px-4 py-3 rounded-2xl border text-sm pr-12 bg-white"
-         style="border-color: #E0E0E0; color: #3E2723" />
-  <button type="button" class="absolute right-4 top-1/2 -translate-y-1/2">
-    <!-- ícone Eye/EyeOff -->
-  </button>
-</div>
-```
+### Badges de status
 
-### Título de página (h1)
-```erb
-<h1 class="text-2xl mb-8" style="color: #5D4037">Título</h1>
-```
+**Sempre** via helpers `booking_group_status_badge(...)` ou `payment_status_badge(...)` — nunca inline.
 
-### Título de seção (h2/h3)
-```erb
-<h2 class="text-lg font-bold mb-4" style="color: #5D4037">Seção</h2>
-<p class="text-sm" style="color: #8D6E63">Subtítulo ou descrição</p>
-```
+| Classe | Cor |
+|---|---|
+| `.badge-success` | Verde — confirmado, ativo, pago, disponível |
+| `.badge-warning` | Amarelo — pendente, aguardando |
+| `.badge-danger` | Vermelho — falha, expirado |
+| `.badge-neutral` | Cinza — cancelado, inativo, usado |
 
-### Badge de desconto / sucesso
-```erb
-<div class="p-3 rounded-2xl" style="background-color: #E8F5E9">
-  <div class="flex justify-between items-center">
-    <span class="text-xs" style="color: #388E3C">Desconto aplicado</span>
-    <span class="text-xs" style="color: #388E3C">- R$ 50,00</span>
-  </div>
-</div>
-```
+### Outros
 
-### Separador
-```erb
-<div class="border-t pt-4" style="border-color: #E0E0E0"></div>
-```
+| Classe | Uso |
+|---|---|
+| `.form-errors` | Caixa de erros de formulário |
+| `.empty-state` | Estado vazio (texto centralizado, padding generoso) |
+| `.text-vdc-primary` / `.text-vdc-secondary` / `.text-vdc-foreground` | Helpers de cor da paleta (alternativa a inline `style`) |
+| `.bg-vdc-background` / `.bg-vdc-primary` / `.bg-vdc-accent` / `.bg-vdc-card` | Helpers de bg da paleta |
+| `.border-vdc-default` | Borda `#E0E0E0` |
 
-### Grid de botões de navegação (2 colunas — usado em Home e Admin)
-```erb
-<div class="grid grid-cols-2 gap-3 mb-8">
-  <button class="bg-white rounded-2xl p-5 shadow-sm hover:shadow-md
-                 transition-all active:scale-[0.98] flex items-center justify-center">
-    <span class="text-sm font-semibold uppercase tracking-wide"
-          style="color: #5D4037">Reservas</span>
-  </button>
-  <!-- ... mais botões -->
-</div>
-```
+---
 
-### Tabs (Entrar / Criar conta)
+## 4 · Helpers Ruby (`ApplicationHelper`)
+
+| Helper | Retorno | Uso |
+|---|---|---|
+| `booking_group_status_badge(status)` | String `"badge-*"` | `<span class="<%= booking_group_status_badge(group.status) %>">` |
+| `payment_status_badge(status)` | String `"badge-*"` | `<span class="<%= payment_status_badge(p.status) %>">` |
+| `money(cents)` | String `"123,45"` | Sempre para valores monetários — nunca usar `number_with_precision(... / 100.0)` direto |
+| `open_modal(id)` | String JS para `onclick` | `onclick="<%= open_modal('my-dialog') %>"` em botões |
+
+Combine com `t("modelo.status.#{obj.status}")` para o texto traduzido:
+
 ```erb
-<div class="flex gap-4 mb-8 border-b" style="border-color: #E0E0E0">
-  <!-- Tab ativa -->
-  <button class="pb-3 px-1 border-b-2 transition-colors"
-          style="border-color: #5D4037; color: #5D4037">
-    Entrar
-  </button>
-  <!-- Tab inativa -->
-  <button class="pb-3 px-1 text-gray-400">Criar conta</button>
-</div>
+<span class="<%= payment_status_badge(p.status) %>">
+  <%= t("payment.status.#{p.status}") %>
+</span>
 ```
 
 ---
 
-## 4. Componentes reutilizáveis → partials ERB
+## 5 · Partials compartilhados (`app/views/shared/`)
 
-### _avatar.html.erb
-Exibe iniciais ou foto do usuário.
-
-```erb
-<%# Uso: <%= render 'shared/avatar', user: current_user, size: 'md' %>
-<% size_classes = { 'sm' => 'w-8 h-8 text-xs', 'md' => 'w-10 h-10 text-sm', 'lg' => 'w-24 h-24 text-3xl' } %>
-<% css = size_classes[size || 'md'] %>
-
-<% if user&.avatar_url.present? %>
-  <img src="<%= user.avatar_url %>"
-       alt="<%= user.name %>"
-       class="<%= css %> rounded-full object-cover" />
-<% elsif user %>
-  <% initials = user.name.split(' ').then { |p| p.length >= 2 ? "#{p.first[0]}#{p.last[0]}" : user.name[0..1] }.upcase %>
-  <div class="<%= css %> rounded-full flex items-center justify-center text-white"
-       style="background-color: #8D6E63">
-    <%= initials %>
-  </div>
-<% else %>
-  <div class="<%= css %> rounded-full bg-gray-300 flex items-center justify-center">
-    <!-- ícone User -->
-  </div>
-<% end %>
-```
-
-### _back_button.html.erb
-```erb
-<%# Uso: <%= render 'shared/back_button', path: root_path %>
-<%= link_to path, class: "mb-8 p-2 hover:bg-white/50 rounded-full inline-block" do %>
-  <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" style="color: #5D4037"
-       fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-  </svg>
-<% end %>
-```
-
-### _flash.html.erb
-Substitui os toasts do Sonner.
-```erb
-<% flash.each do |type, message| %>
-  <% bg = type == 'alert' ? '#d4183d' : '#5D4037' %>
-  <div class="fixed top-4 right-4 z-50 px-4 py-3 rounded-2xl text-white text-sm shadow-lg"
-       style="background-color: <%= bg %>"
-       data-controller="flash"
-       data-flash-timeout-value="3000">
-    <%= message %>
-  </div>
-<% end %>
-```
-
-### _slot_card.html.erb
-Card clicável de slot de disponibilidade (tela Home).
-```erb
-<%# Estados: :available, :selected, :booked %>
-<% bg_color = case state
-   when :selected then '#C9B8A8'
-   when :booked   then '#F5F5F5'
-   else '#fef8e1'
-   end %>
-<% text_color = state == :booked ? '#BDBDBD' : '#3E2723' %>
-
-<button class="w-full text-left px-6 py-4 rounded-full transition-all
-               <%= 'opacity-50 cursor-not-allowed' if state == :booked %>"
-        style="background-color: <%= bg_color %>; color: <%= text_color %>"
-        <%= 'disabled' if state == :booked %>>
-  <div class="flex items-center justify-between">
-    <div>
-      <div class="font-medium"><%= slot.name_or_period %></div>
-      <div class="text-sm opacity-70">
-        (<%= slot.starts_at.strftime('%Hh') %> às <%= slot.ends_at.strftime('%Hh') %>)
-        <% if state == :booked %><span class="ml-2 text-xs">• Reservado</span><% end %>
-      </div>
-    </div>
-    <div class="font-semibold">
-      R$ <%= number_to_currency(slot.price, unit: '', separator: ',', delimiter: '.') %>
-    </div>
-  </div>
-</button>
-```
-
-### _week_selector.html.erb
-Seletor de semana (tela Home e Admin).
-```erb
-<div class="flex items-center gap-2 bg-white rounded-2xl p-4 shadow-sm">
-  <!-- Botão semana anterior -->
-  <button class="p-2 rounded-full hover:bg-gray-100 disabled:opacity-30"
-          data-action="click->week-selector#prev">
-    <!-- ChevronLeft -->
-  </button>
-
-  <div class="flex-1 grid grid-cols-7 gap-2" data-week-selector-target="dates">
-    <!-- Renderizado via Stimulus / Turbo Frame -->
-  </div>
-
-  <!-- Botão próxima semana -->
-  <button class="p-2 rounded-full hover:bg-gray-100 disabled:opacity-30"
-          data-action="click->week-selector#next">
-    <!-- ChevronRight -->
-  </button>
-</div>
-```
-
-### _pix_payment.html.erb
-Bloco de QR Code Pix (tela Pagamento).
-```erb
-<div class="bg-white border-2 rounded-2xl p-6 mb-4" style="border-color: #E0E0E0">
-  <!-- QR Code gerado pelo MercadoPago -->
-  <div class="w-48 h-48 mx-auto mb-4 flex items-center justify-center">
-    <img src="<%= payment.pix_qr_url %>" alt="QR Code Pix" class="w-full h-full object-contain" />
-  </div>
-
-  <!-- Contador regressivo (Stimulus) -->
-  <div class="text-center mb-4">
-    <div class="text-sm mb-2" style="color: #5D4037">
-      Tempo restante:
-      <span data-controller="countdown"
-            data-countdown-end-value="<%= payment.expires_at.to_i %>"
-            data-countdown-target="display">--:--</span>
-    </div>
-  </div>
-
-  <!-- Copia e cola -->
-  <div class="bg-gray-50 rounded-xl p-3 mb-3">
-    <div class="text-xs mb-1" style="color: #8D6E63">Chave PIX (copia e cola):</div>
-    <div class="text-xs break-all" style="color: #3E2723"
-         data-controller="clipboard"
-         data-clipboard-text-value="<%= payment.pix_code %>">
-      <%= payment.pix_code %>
-    </div>
-  </div>
-
-  <button class="w-full py-2 rounded-full border-2 flex items-center justify-center gap-2 text-sm"
-          style="border-color: #5D4037; color: #5D4037"
-          data-action="click->clipboard#copy">
-    Copiar chave PIX
-  </button>
-</div>
-```
+| Partial | Uso |
+|---|---|
+| `shared/back_button` | `<%= render "shared/back_button", path: caminho_path %>` no topo de telas internas |
+| `shared/avatar` | `<%= render "shared/avatar", user: @user, size: "md" %>` — tamanhos `sm`/`md`/`lg` |
+| `shared/flash` | Renderizado automaticamente no layout |
+| `shared/form_errors` | `<%= render "shared/form_errors", object: @recurso %>` antes do form |
+| `shared/slot_card` | `<%= render "shared/slot_card", availability: av %>` para slot de horário |
+| `shared/logo` | `<%= render "shared/logo", size: "lg" %>` |
+| `shared/modal` | `<%= render layout: "shared/modal", locals: { id: "...", title: "..." } do %>...<% end %>` |
+| `shared/modal_actions` | Rodapé de botões em modal: `<%= render "shared/modal_actions", label: "Salvar" %>` |
+| `shared/cart_summary` | Sticky cart na home (Turbo Frame) |
 
 ---
 
-## 5. Layout Admin
+## 6 · Tipografia
 
-O AdminLayout do React era uma sidebar simples. Em Rails, vira `layouts/admin.html.erb`.
+A `application.css` define os defaults:
 
-### Menu items do admin (atualizado — sem Videira Shop)
-```ruby
-ADMIN_MENU = [
-  { label: 'Reservas',       path: :admin_bookings_path },
-  { label: 'Clientes',       path: :admin_users_path },
-  { label: 'Disponibilidade', path: :admin_availabilities_path },
-  { label: 'Descontos',      path: :admin_discount_rules_path },
-]
-```
+| Elemento | Tamanho | Peso |
+|---|---|---|
+| `h1` | 1.5rem (`text-2xl`) | 500 (`font-medium`) |
+| `h2` | 1.25rem (`text-xl`) | 500 (`font-medium`) |
+| `h3` | 1.125rem (`text-lg`) | 500 (`font-medium`) |
+| `h4` | 1rem (`text-base`) | 500 (`font-medium`) |
+| `button` | 1rem | 500 (`font-medium`) |
+| `input, select, textarea` | **16px** (anti-zoom iOS) | 400 (`font-normal`) |
 
-### layouts/admin.html.erb (estrutura)
-```erb
-<!DOCTYPE html>
-<html>
-<head>
-  <title>VDC Admin</title>
-  <%= csrf_meta_tags %>
-  <%= stylesheet_link_tag 'application', 'data-turbo-track': 'reload' %>
-  <%= javascript_importmap_tags %>
-</head>
-<body style="background-color: #fef8e1; font-family: 'Prompt', sans-serif">
-  <div class="min-h-screen overflow-x-hidden">
-    <div class="max-w-md mx-auto px-4 py-6">
-
-      <!-- Header com Logo + Logout -->
-      <div class="flex justify-center mb-6 relative">
-        <%= render 'shared/logo' %>
-        <%= button_to destroy_user_session_path, method: :delete,
-            class: "absolute right-0 top-0 p-2 hover:bg-white/50 rounded-full transition-colors" do %>
-          <!-- LogOut icon -->
-        <% end %>
-      </div>
-
-      <!-- Grid de navegação -->
-      <div class="grid grid-cols-2 gap-3 mb-8">
-        <% ADMIN_MENU.each do |item| %>
-          <%= link_to send(item[:path]),
-              class: "bg-white rounded-2xl p-5 shadow-sm hover:shadow-md
-                      transition-all active:scale-[0.98] flex items-center justify-center" do %>
-            <span class="text-sm font-semibold uppercase tracking-wide"
-                  style="color: #5D4037"><%= item[:label] %></span>
-          <% end %>
-        <% end %>
-      </div>
-
-      <!-- Conteúdo da página -->
-      <%= yield %>
-
-    </div>
-  </div>
-</body>
-</html>
-```
+> **Regra:** nunca use `font-semibold` ou `font-bold`. O peso padrão de toda a tipografia VDC é `font-medium`.
 
 ---
 
-## 6. Mapa de Telas: React → Rails
+## 7 · i18n
 
-| Tela React | View Rails | Rota | Observações |
-|-----------|------------|------|-------------|
-| `Home.tsx` | `home/index.html.erb` | `GET /` | Seletor de semana + lista de slots |
-| `Login.tsx` | `devise/sessions/new.html.erb` | `GET /login` | Devise customizado + OAuth Google |
-| `Cadastro.tsx` | `devise/registrations/new.html.erb` | `GET /cadastro` | Devise customizado |
-| `Conta.tsx` | `users/show.html.erb` | `GET /conta` | Perfil da dentista |
-| `MinhasReservas.tsx` | `bookings/index.html.erb` | `GET /minhas-reservas` | Histórico por mês |
-| `ConfirmarReserva.tsx` | `booking_groups/new.html.erb` | `GET /reservas/confirmar` | Resumo + desconto |
-| `Pagamento.tsx` | `payments/show.html.erb` | `GET /pagamento/:id` | QR Code Pix + Turbo polling |
-| `AdminReservas.tsx` | `admin/bookings/index.html.erb` | `GET /admin/reservas` | Filtro por data |
-| `AdminClientes.tsx` | `admin/users/index.html.erb` | `GET /admin/clientes` | Busca por nome/CRO |
-| `DetalhesCliente.tsx` | `admin/users/show.html.erb` | `GET /admin/clientes/:id` | Dados + reservas + histórico |
-| `AdminConfigurar.tsx` | `admin/availabilities/index.html.erb` | `GET /admin/disponibilidade` | Criar/editar slots |
-| *(novo)* | `admin/discount_rules/index.html.erb` | `GET /admin/descontos` | CRUD de regras de desconto |
+Toda string visível no UI usa `t(...)`. Status enums seguem `t("modelo.status.#{obj.status}")`.
+
+**Arquivo:** `config/locales/pt-BR.yml`. Chaves de status já cadastradas:
+
+- `booking_group.status.{pending,confirmed,cancelled,expired}`
+- `booking.status.{pending,confirmed,cancelled}`
+- `payment.status.{pending,paid,failed,cancelled,expired}`
+- `availability.status.{available,booked,cancelled,blocked}`
 
 ---
 
-## 7. Tradução de Interatividade: React → Stimulus
+## 8 · Quando criar uma classe utilitária nova
 
-| Padrão React | Equivalente Rails/Stimulus |
-|-------------|---------------------------|
-| `useState` para abrir/fechar modal | Stimulus controller + `data-modal-target` |
-| `useNavigate` | `Turbo.visit(url)` ou `link_to` com Turbo |
-| `useState` para countdown timer | Stimulus controller `countdown_controller.js` |
-| Clipboard copy | Stimulus controller `clipboard_controller.js` |
-| Polling de status do Pix | Turbo Stream broadcast via ActionCable |
-| Cart/carrinho de slots | Turbo Frame `<turbo-frame id="cart">` |
-| Animações `motion/react` | CSS transitions + `@starting-style` |
-| Formulário controlado React | Rails form helpers + Stimulus para máscaras |
+Crie em `application.css` (`@layer components`) **somente** se:
 
-### Exemplo: Countdown Stimulus (substitui o timer do Pix)
-```javascript
-// app/javascript/controllers/countdown_controller.js
-import { Controller } from "@hotwired/stimulus"
+1. O padrão visual se repete em **3+ lugares**;
+2. Não cabe em uma classe Tailwind existente;
+3. Não pode ser um partial (é formato visual puro, não conteúdo).
 
-export default class extends Controller {
-  static targets = ["display"]
-  static values = { end: Number }
+Senão, prefira:
+- **Partials** para blocos com conteúdo (cards de listagem complexos, headers).
+- **Tailwind utility** para customização pontual.
+- **Inline `style`** para hex específico da paleta.
 
-  connect() {
-    this.tick()
-    this.interval = setInterval(() => this.tick(), 1000)
-  }
-
-  disconnect() {
-    clearInterval(this.interval)
-  }
-
-  tick() {
-    const remaining = Math.max(0, this.endValue - Math.floor(Date.now() / 1000))
-    const mins = Math.floor(remaining / 60).toString().padStart(2, '0')
-    const secs = (remaining % 60).toString().padStart(2, '0')
-    this.displayTarget.textContent = `${mins}:${secs}`
-    if (remaining === 0) clearInterval(this.interval)
-  }
-}
-```
-
-### Exemplo: Clipboard Stimulus
-```javascript
-// app/javascript/controllers/clipboard_controller.js
-import { Controller } from "@hotwired/stimulus"
-
-export default class extends Controller {
-  static values = { text: String }
-  static targets = ["button"]
-
-  copy() {
-    navigator.clipboard.writeText(this.textValue)
-    const original = this.buttonTarget.textContent
-    this.buttonTarget.textContent = "Copiado!"
-    setTimeout(() => this.buttonTarget.textContent = original, 2000)
-  }
-}
-```
-
-### Exemplo: Turbo Stream para status do Pix
-```ruby
-# app/jobs/check_payment_status_job.rb
-# Quando MercadoPago confirma via webhook:
-Turbo::StreamsChannel.broadcast_replace_to(
-  "payment_#{payment.id}",
-  target: "payment_status",
-  partial: "payments/confirmed",
-  locals: { payment: payment }
-)
-```
-
-```erb
-<!-- app/views/payments/show.html.erb -->
-<%= turbo_stream_from "payment_#{@payment.id}" %>
-<turbo-frame id="payment_status">
-  <%= render 'payments/pending', payment: @payment %>
-</turbo-frame>
-```
-
----
-
-## 8. Formulário de Cadastro (campos do Figma)
-
-O React tinha estes campos — todos precisam existir no Devise:
-
-```ruby
-# config/initializers/devise.rb (campos extras)
-# app/models/user.rb
-# attr_accessor para campos do Devise
-```
-
-```erb
-<!-- devise/registrations/new.html.erb -->
-<%= form_for resource, url: registration_path(resource_name) do |f| %>
-  <%= f.text_field :name,       placeholder: "Nome completo*",    class: "..." %>
-  <%= f.email_field :email,     placeholder: "E-mail*",           class: "..." %>
-  <%= f.password_field :password, placeholder: "Senha*",          class: "..." %>
-  <%= f.password_field :password_confirmation, placeholder: "Confirmar senha*", class: "..." %>
-  <%= f.telephone_field :phone, placeholder: "Número de telefone*", class: "...",
-                                data: { controller: "phone-mask" } %>
-  <%= f.text_field :cro_number, placeholder: "Registro CRO*",     class: "..." %>
-  <%= f.text_field :specialty,  placeholder: "Área de atuação*",   class: "..." %>
-
-  <!-- Aceite de termos -->
-  <label class="flex items-start gap-2">
-    <%= f.check_box :terms_accepted, class: "w-4 h-4 mt-1 rounded" %>
-    <span class="text-xs" style="color: #3E2723">
-      Li e aceito os
-      <%= link_to "Termos de Uso e Política de Privacidade", terms_path,
-                  class: "text-xs underline", style: "color: #2196F3" %>
-    </span>
-  </label>
-
-  <%= f.submit "Criar conta", class: "w-full py-3 rounded-full text-white",
-               style: "background-color: #5D4037" %>
-<% end %>
-```
-
----
-
-## 9. Cores por Contexto (referência rápida)
-
-| Contexto | Cor | Hex |
-|---------|-----|-----|
-| Fundo de toda página | `--background` | `#fef8e1` |
-| Texto principal | `--foreground` | `#3E2723` |
-| Botões primários, títulos, ações | `--primary` | `#5D4037` |
-| Textos secundários, ícones | `--secondary` | `#8D6E63` |
-| Slots selecionados | `--accent` | `#C9B8A8` |
-| Cards e modais | `white` | `#ffffff` |
-| Bordas de inputs | — | `#E0E0E0` |
-| Sucesso / desconto | — | `#388E3C` / `#E8F5E9` |
-| Erro / cancelamento | `--destructive` | `#d4183d` |
-| Botão/ícone Pix | — | `#32BCAD` |
-| Avatar sem foto | — | `#8D6E63` |
-
----
-
-## 10. O que NÃO recriar (descartado do Figma)
-
-| Componente React | Motivo |
-|-----------------|--------|
-| `VideiraShop.tsx` | Fora do escopo |
-| `Creditos.tsx` | Fora do escopo |
-| `CartContext` (produtos) | Só slots entram no carrinho |
-| `motion/react` animations | Substituir por CSS transitions simples |
-| `react-dnd` drag-and-drop | Não necessário — ordenação por `starts_at` |
-| `canvas-confetti` | Opcional — adicionar depois se desejado |
-| `AdminVideiraShop.tsx` | Fora do escopo |
-
----
-
-*Videira Dental Clinic — documento vivo. Atualizar ao criar cada nova tela.*
+Depois de adicionar uma classe nova, **atualize este documento e o template**.

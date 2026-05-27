@@ -26,9 +26,11 @@
 
 | Documento | Descrição |
 |-----------|-----------|
-| [[DESIGN_SYSTEM]] | Tokens, componentes e padrões visuais (Tailwind) |
+| [[README]] (em `03_design/`) | **Comece aqui** — índice e fluxo recomendado |
 | [[TEMPLATE_TELA_E_MODAL]] | Esqueletos prontos para criar telas e modais novos |
-| [[RESTYLING_TASKS]] | Checklist de aplicação do design system nas telas |
+| [[DESIGN_SYSTEM]] | Tokens, classes utilitárias `.btn-*`/`.card-*`/`.badge-*` e helpers Ruby |
+| [[CATALOGO_TELAS]] | Mapa das telas existentes para reuso ao construir telas novas |
+| [[ARCHIVE_RESTYLING]] | Histórico (arquivado) do restyling inicial — não usar como guia |
 
 ## 04 · Processo
 
@@ -52,7 +54,7 @@ FONTE_DA_VERDADE → ARQUITETURA → BANCO_DE_DADOS → MODULOS
        ↓
   ROADMAP_TECNICO → ATIVIDADES
        ↓
-  DESIGN_SYSTEM → RESTYLING_TASKS
+  03_design/README → TEMPLATE_TELA_E_MODAL → DESIGN_SYSTEM → CATALOGO_TELAS
 ```
 
 > **README.md** (raiz do projeto) cobre setup local, OAuth, MercadoPago e deploy com Kamal.

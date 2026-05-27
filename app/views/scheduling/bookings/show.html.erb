@@ -4,9 +4,8 @@
 
 <div class="flex items-center justify-between mb-4">
   <h1 class="text-2xl font-medium" style="color: #5D4037">Reserva</h1>
-  <span class="<%= booking_group_status_class(@booking_group.status) %>"
-        style="<%= booking_group_status_style(@booking_group.status) %>">
-    <%= t("booking_group.status.#{@booking_group.status}", default: @booking_group.status.humanize) %>
+  <span class="<%= booking_group_status_badge(@booking_group.status) %>">
+    <%= t("booking_group.status.#{@booking_group.status}") %>
   </span>
 </div>
 
@@ -54,7 +53,5 @@
 </div>
 
 <% if @booking_group.pending? && @booking_group.payment.present? %>
-  <%= link_to "Ver QR Code Pix →", pagamento_path(@booking_group.payment),
-        class: "block w-full py-3 rounded-full text-white text-sm font-medium text-center",
-        style: "background-color: #5D4037" %>
+  <%= link_to "Ver QR Code Pix →", pagamento_path(@booking_group.payment), class: "btn-cta" %>
 <% end %>

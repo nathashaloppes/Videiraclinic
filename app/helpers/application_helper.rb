@@ -1,17 +1,23 @@
 module ApplicationHelper
   include Pagy::Frontend
 
-  def booking_group_status_class(_status)
-    "text-xs px-3 py-1 rounded-full font-semibold"
+  def booking_group_status_badge(status)
+    {
+      "pending"   => "badge-warning",
+      "confirmed" => "badge-success",
+      "cancelled" => "badge-neutral",
+      "expired"   => "badge-danger"
+    }.fetch(status.to_s, "badge-neutral")
   end
 
-  def booking_group_status_style(status)
+  def payment_status_badge(status)
     {
-      "pending"   => "background-color: #FFF9C4; color: #F57F17",
-      "confirmed" => "background-color: #E8F5E9; color: #388E3C",
-      "cancelled" => "background-color: #F5F5F5; color: #757575",
-      "expired"   => "background-color: #FFEBEE; color: #d4183d"
-    }.fetch(status.to_s, "background-color: #F5F5F5; color: #757575")
+      "pending"   => "badge-warning",
+      "paid"      => "badge-success",
+      "failed"    => "badge-danger",
+      "cancelled" => "badge-neutral",
+      "expired"   => "badge-danger"
+    }.fetch(status.to_s, "badge-neutral")
   end
 
   def money(cents)

@@ -343,15 +343,28 @@ Definidas em `app/assets/tailwind/application.css`. Use-as em vez de reescrever 
 |---|---|
 | `.btn-primary` | Botão marrom pill com texto branco |
 | `.btn-outline` | Botão com borda marrom pill, texto marrom |
-| `.btn-danger` | Botão outline vermelho (destructive) |
-| `.btn-sm-primary` / `.btn-sm-outline` | Versões menores |
+| `.btn-cta` | CTA principal **largura total** (pill marrom, `block w-full`) — use em "Confirmar →", "Gerar Pix →", etc. |
+| `.btn-danger` | Botão outline vermelho (destructive leve) |
+| `.btn-danger-filled` | Botão **sólido vermelho** — use em modais de confirmar exclusão (par com `.btn-outline`) |
+| `.btn-sm-primary` / `.btn-sm-outline` | Versões menores (headers de admin: "+ Adicionar", "Editar") |
+| `.btn-xs-outline` / `.btn-xs-danger` | Versões mínimas (botões inline em linhas de listagem) |
 | `.input-field` | Input retangular com borda (use só em formulários antigos) |
 | `.label` | Label de input (texto pequeno marrom) |
 | `.card` | Card branco principal (rounded-3xl + shadow-lg) |
 | `.card-sm` / `.card-md` | Cards menores |
+| `.card-link` | Card branco **clicável** (`block bg-white rounded-2xl shadow-sm p-4 hover:shadow-md ...`) — use em `link_to`/`button_to` de listagens |
 | `.badge-success` / `.badge-warning` / `.badge-danger` / `.badge-neutral` | Badges de status |
 | `.form-errors` | Caixa de erros de formulário |
 | `.empty-state` | Estado vazio (texto centralizado) |
+
+**Helpers de status (Ruby — `ApplicationHelper`):**
+
+| Helper | Retorno | Uso |
+|---|---|---|
+| `booking_group_status_badge(status)` | Classe `.badge-*` | `<span class="<%= booking_group_status_badge(group.status) %>">` |
+| `payment_status_badge(status)` | Classe `.badge-*` | `<span class="<%= payment_status_badge(p.status) %>">` |
+
+Nunca escreva o badge inline com `style="background-color: ...; color: ..."` — sempre via helper.
 
 ---
 

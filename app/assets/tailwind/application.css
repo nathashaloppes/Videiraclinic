@@ -110,6 +110,9 @@ input, select, textarea {
   .card-sm     { @apply bg-white rounded-2xl shadow-sm p-4; }
   .card-md     { @apply bg-white rounded-2xl shadow-sm p-5; }
 
+  /* Card clicável (link_to/button_to com hover) — usado em listagens */
+  .card-link   { @apply block bg-white rounded-2xl shadow-sm p-4 hover:shadow-md transition-all active:scale-[0.98]; }
+
   /* Botões */
   .btn-primary {
     @apply py-3 px-6 rounded-full text-white text-sm font-medium transition-all active:scale-[0.98];
@@ -123,14 +126,27 @@ input, select, textarea {
     color: #5D4037;
   }
 
+  /* CTA principal full-width (pill marrom largura total) */
+  .btn-cta {
+    @apply block w-full py-3 rounded-full text-white text-sm font-medium text-center cursor-pointer transition-all active:scale-[0.98];
+    background-color: #5D4037;
+  }
+  .btn-cta:hover { background-color: #4E342E; }
+
   .btn-danger {
     @apply py-1 px-3 rounded-full text-xs border transition-all;
     border-color: #d4183d;
     color: #d4183d;
   }
 
+  /* Ação destrutiva preenchida (vermelho sólido) — modais de confirmar exclusão */
+  .btn-danger-filled {
+    @apply py-3 px-4 rounded-full text-white text-sm font-medium cursor-pointer transition-all active:scale-[0.98];
+    background-color: #d4183d;
+  }
+
   .btn-sm-primary {
-    @apply text-xs px-4 py-2 rounded-full text-white;
+    @apply text-xs px-4 py-2 rounded-full text-white font-medium;
     background-color: #5D4037;
   }
 
@@ -165,6 +181,8 @@ input, select, textarea {
   /* Badges de status */
   .badge-success { @apply text-xs px-2 py-1 rounded-full; background-color: #E8F5E9; color: #388E3C; }
   .badge-warning { @apply text-xs px-2 py-1 rounded-full; background-color: #FFF9C4; color: #F57F17; }
+  .badge-danger  { @apply text-xs px-2 py-1 rounded-full; background-color: #FFEBEE; color: #d4183d; }
+  .badge-neutral { @apply text-xs px-2 py-1 rounded-full; background-color: #F5F5F5; color: #757575; }
 
   /* Erros de formulário */
   .form-errors {

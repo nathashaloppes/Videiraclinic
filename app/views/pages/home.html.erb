@@ -11,7 +11,7 @@
      data-calendar-max-value="<%= max_date %>"
      data-calendar-base-value="/">
 
-  <span class="text-sm font-bold uppercase tracking-widest" style="color: #5D4037">Sala</span>
+  <span class="text-sm font-medium uppercase tracking-widest" style="color: #5D4037">Sala</span>
 
   <%# Date badge — click opens calendar dialog %>
   <button type="button"
@@ -32,10 +32,10 @@
     <%# Month header %>
     <div class="flex items-center justify-between mb-4">
       <button type="button" data-action="click->calendar#prev"
-              class="p-1 rounded-full hover:bg-gray-100" style="color:#8D6E63">‹</button>
-      <span data-calendar-target="label" class="text-sm font-semibold" style="color:#5D4037"></span>
+              class="p-1 rounded-full hover:bg-[#fef8e1]" style="color:#8D6E63">‹</button>
+      <span data-calendar-target="label" class="text-sm font-medium" style="color:#5D4037"></span>
       <button type="button" data-action="click->calendar#next"
-              class="p-1 rounded-full hover:bg-gray-100" style="color:#8D6E63">›</button>
+              class="p-1 rounded-full hover:bg-[#fef8e1]" style="color:#8D6E63">›</button>
     </div>
     <%# Calendar grid (rendered by Stimulus) %>
     <div data-calendar-target="grid"></div>
@@ -55,7 +55,7 @@
   <% can_prev  = @date - 7 >= min_date || (week_start - 7 + 6) >= min_date %>
   <% if can_prev %>
     <%= link_to root_path(date: prev_date.to_s),
-          class: "shrink-0 w-7 h-7 flex items-center justify-center rounded-full text-base hover:bg-gray-100 transition-colors",
+          class: "shrink-0 w-7 h-7 flex items-center justify-center rounded-full text-base hover:bg-[#fef8e1] transition-colors",
           style: "color: #8D6E63" do %>‹<% end %>
   <% else %>
     <span class="shrink-0 w-7 h-7 flex items-center justify-center text-base opacity-20" style="color:#8D6E63">‹</span>
@@ -67,21 +67,21 @@
       <% active   = day == @date %>
       <% disabled = day < min_date || day > max_date %>
       <% if disabled %>
-        <span class="flex flex-col items-center px-2 py-1.5 rounded-xl opacity-25">
+        <span class="flex flex-col items-center px-2 py-1.5 rounded-2xl opacity-25">
           <span class="text-xs font-medium" style="color:#8D6E63"><%= %w[DOM SEG TER QUA QUI SEX SÁB][day.wday] %></span>
-          <span class="text-xs font-bold" style="color:#5D4037"><%= day.day %></span>
+          <span class="text-xs font-medium" style="color:#5D4037"><%= day.day %></span>
         </span>
       <% elsif active %>
-        <span class="flex flex-col items-center px-2 py-1.5 rounded-xl"
+        <span class="flex flex-col items-center px-2 py-1.5 rounded-2xl"
               style="background-color:#5D4037">
           <span class="text-xs font-medium text-white"><%= %w[DOM SEG TER QUA QUI SEX SÁB][day.wday] %></span>
-          <span class="text-xs font-bold text-white"><%= day.day %></span>
+          <span class="text-xs font-medium text-white"><%= day.day %></span>
         </span>
       <% else %>
         <%= link_to root_path(date: day.to_s),
-              class: "flex flex-col items-center px-2 py-1.5 rounded-xl transition-all" do %>
+              class: "flex flex-col items-center px-2 py-1.5 rounded-2xl transition-all" do %>
           <span class="text-xs font-medium" style="color:#8D6E63"><%= %w[DOM SEG TER QUA QUI SEX SÁB][day.wday] %></span>
-          <span class="text-xs font-bold" style="color:#5D4037"><%= day.day %></span>
+          <span class="text-xs font-medium" style="color:#5D4037"><%= day.day %></span>
         <% end %>
       <% end %>
     <% end %>
@@ -89,7 +89,7 @@
 
   <% if @date + 7 <= max_date %>
     <%= link_to root_path(date: (@date + 7).to_s),
-          class: "shrink-0 w-7 h-7 flex items-center justify-center rounded-full text-base hover:bg-gray-100 transition-colors",
+          class: "shrink-0 w-7 h-7 flex items-center justify-center rounded-full text-base hover:bg-[#fef8e1] transition-colors",
           style: "color: #8D6E63" do %>›<% end %>
   <% else %>
     <span class="shrink-0 w-7 h-7 flex items-center justify-center text-base opacity-20" style="color:#8D6E63">›</span>
@@ -97,7 +97,7 @@
 </div>
 
 <%# ── Day header ─────────────────────────────────────────────────────────── %>
-<h2 class="text-sm font-bold uppercase tracking-wide mb-4" style="color: #5D4037">
+<h2 class="text-sm font-medium uppercase tracking-wide mb-4" style="color: #5D4037">
   <%= l(@date, format: "%A, %d/%m").upcase %>
 </h2>
 

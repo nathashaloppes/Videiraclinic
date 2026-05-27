@@ -1,6 +1,6 @@
 <% content_for :title, "Pagamentos" %>
 
-<h1 class="text-2xl font-semibold mb-4 text-vdc-primary">Pagamentos</h1>
+<h1 class="text-2xl font-medium mb-4 text-vdc-primary">Pagamentos</h1>
 
 <div class="card-sm mb-4">
   <%= form_with url: admin_payments_path, method: :get, data: { turbo: false }, class: "flex gap-2" do |f| %>
@@ -14,18 +14,16 @@
 
 <div class="flex flex-col gap-3">
   <% @payments.each do |p| %>
-    <%= link_to admin_payment_path(p),
-          class: "block card-sm hover:shadow-md transition-all active:scale-[0.98]" do %>
+    <%= link_to admin_payment_path(p), class: "card-link" do %>
       <div class="flex items-center justify-between mb-2">
         <p class="font-medium text-sm text-vdc-foreground"><%= p.booking_group.dentist.name %></p>
-        <span class="text-xs px-2 py-1 rounded-full font-semibold"
-              style="<%= p.paid? ? 'background-color: #E8F5E9; color: #388E3C' : p.expired? ? 'background-color: #FFEBEE; color: #d4183d' : 'background-color: #FFF9C4; color: #F57F17' %>">
-          <%= p.status %>
+        <span class="<%= payment_status_badge(p.status) %>">
+          <%= t("payment.status.#{p.status}") %>
         </span>
       </div>
       <div class="flex justify-between text-xs text-vdc-secondary">
         <span><%= l(p.created_at, format: :default) %></span>
-        <span class="font-semibold text-vdc-primary">R$ <%= money(p.amount_cents) %></span>
+        <span class="font-medium text-vdc-primary">R$ <%= money(p.amount_cents) %></span>
       </div>
     <% end %>
   <% end %>
