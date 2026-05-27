@@ -1,6 +1,13 @@
 class Auth::RegistrationsController < Devise::RegistrationsController
   skip_before_action :authenticate_user!, only: [:new, :create]
 
+  protected
+
+  def build_resource(hash = {})
+    super
+    resource.clinic ||= Clinic.first
+  end
+
   private
 
   def sign_up_params

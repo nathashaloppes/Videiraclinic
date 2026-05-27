@@ -20,8 +20,8 @@
 
   <div class="flex flex-col gap-2 text-sm" style="color: #8D6E63">
     <p><strong style="color:#3E2723">E-mail:</strong> <%= @user.email %></p>
-    <p><strong style="color:#3E2723">Telefone:</strong> <%= @user.phone.presence || "—" %></p>
-    <p><strong style="color:#3E2723">CPF:</strong> <%= @user.cpf.presence || "—" %></p>
+    <p><strong style="color:#3E2723">Telefone:</strong> <%= @user.phone.present? ? format_phone(@user.phone) : "—" %></p>
+    <p><strong style="color:#3E2723">CPF:</strong> <%= @user.cpf.present? ? format_cpf(@user.cpf) : "—" %></p>
     <p><strong style="color:#3E2723">Nascimento:</strong> <%= @user.birth_date ? l(@user.birth_date, format: :default) : "—" %></p>
     <p><strong style="color:#3E2723">Cadastro:</strong> <%= l(@user.created_at, format: :default) %></p>
     <p><strong style="color:#3E2723">Login via:</strong> <%= @user.provider&.humanize || "Email/senha" %></p>

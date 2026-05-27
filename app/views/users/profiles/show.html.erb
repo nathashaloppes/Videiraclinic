@@ -21,11 +21,11 @@
     </div>
     <div class="flex justify-between py-3 border-b text-sm" style="border-color: #E0E0E0">
       <span style="color: #3E2723">Telefone</span>
-      <span style="color: #8D6E63"><%= current_user.phone.presence || "—" %></span>
+      <span style="color: #8D6E63"><%= current_user.phone.present? ? format_phone(current_user.phone) : "—" %></span>
     </div>
     <div class="flex justify-between py-3 border-b text-sm" style="border-color: #E0E0E0">
       <span style="color: #3E2723">CPF</span>
-      <span style="color: #8D6E63"><%= current_user.cpf.presence || "—" %></span>
+      <span style="color: #8D6E63"><%= current_user.cpf.present? ? format_cpf(current_user.cpf) : "—" %></span>
     </div>
     <div class="flex justify-between py-3 text-sm">
       <span style="color: #3E2723">Nascimento</span>
@@ -48,9 +48,7 @@
   <% recent = current_user.booking_groups.order(created_at: :desc).limit(5) %>
   <% if recent.empty? %>
     <p class="text-sm mb-3" style="color: #8D6E63">Nenhuma reserva ainda.</p>
-    <%= link_to "Agendar agora →", root_path,
-          class: "text-xs px-4 py-2 rounded-full text-white",
-          style: "background-color: #5D4037" %>
+    <%= link_to "Reservar sala", root_path, class: "btn-sm-primary" %>
   <% else %>
     <div class="flex flex-col gap-3">
       <% recent.each do |group| %>
