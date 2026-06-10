@@ -40,10 +40,13 @@ RSpec.describe "Booking flow", type: :system do
       visit root_path
       click_button "R$ 170,00", match: :first
 
-      click_link "Confirmar →", match: :first
+      click_link "Adicionar ao carrinho", match: :first
+      expect(page).to have_content("Meu Carrinho")
+
+      click_link "FINALIZAR PEDIDO"
       expect(page).to have_content("Confirmar reserva")
 
-      click_button "Confirmar e gerar Pix →"
+      click_button "Pagar"
       expect(page).to have_content("Pagamento via Pix")
       expect(page).to have_content("Pagar via Pix no InfinitePay")
     end

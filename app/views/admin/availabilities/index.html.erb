@@ -186,15 +186,14 @@
     <p class="text-xs mb-4" style="color: #8D6E63">
       O e-mail pode ser editado depois no cadastro do usuário.
     </p>
-    <%= form_with url: quick_create_admin_users_path, method: :post, data: { turbo: false }, class: "flex flex-col gap-4" do %>
-      <%= hidden_field_tag :return_date, @date %>
+    <%= form_with url: admin_users_path, method: :post, data: { turbo: false }, class: "flex flex-col gap-4" do %>
       <div>
         <label class="label">Nome</label>
-        <input type="text" name="name" class="input-field" placeholder="Nome completo" required>
+        <input type="text" name="user[name]" class="input-field" placeholder="Nome completo" required>
       </div>
       <div>
         <label class="label">E-mail</label>
-        <input type="email" name="email" class="input-field" placeholder="email@exemplo.com" required>
+        <input type="email" name="user[email]" class="input-field" placeholder="email@exemplo.com" required>
       </div>
       <%= render "shared/modal_actions", label: "Cadastrar" %>
     <% end %>

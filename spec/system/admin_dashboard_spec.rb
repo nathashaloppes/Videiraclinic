@@ -20,9 +20,9 @@ RSpec.describe "Admin dashboard", type: :system do
     expect(page).to have_current_path(admin_availabilities_path)
   end
 
-  it "navigates to Créditos" do
+  it "navigates to Clientes" do
     visit admin_root_path
-    click_link "Créditos", match: :first
-    expect(page).to have_current_path(admin_credits_path)
+    click_link "Clientes", match: :first
+    expect(page).to have_current_path(admin_users_path)
   end
 end

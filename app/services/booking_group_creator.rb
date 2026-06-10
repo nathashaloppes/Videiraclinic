@@ -9,8 +9,8 @@ class BookingGroupCreator < ApplicationService
   end
 
   def call
-    return failure("Horário inválido ou não encontrado.") unless @clinic
     return failure("Selecione ao menos um horário.") if @availability_ids.empty?
+    return failure("Horário inválido ou não encontrado.") unless @clinic
 
     calc = DiscountCalculator.call(availability_ids: @availability_ids, clinic: @clinic)
     return failure("Erro ao calcular preços.") unless calc.success?
