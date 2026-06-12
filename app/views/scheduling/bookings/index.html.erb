@@ -1,9 +1,7 @@
 <% content_for :title, "Minhas Reservas" %>
 <% content_for :hide_app_chrome, true %>
 
-<%= render "shared/back_button", path: root_path %>
-
-<h1 class="text-2xl font-medium mb-4" style="color: #5D4037">Minhas reservas</h1>
+<%= render "shared/page_header", path: root_path, title: "Minhas reservas" %>
 
 <%# Filtro por mês %>
 <% if @months.any? %>

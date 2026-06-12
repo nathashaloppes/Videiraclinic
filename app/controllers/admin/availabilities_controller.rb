@@ -39,7 +39,10 @@ class Admin::AvailabilitiesController < Admin::BaseController
   end
 
   def toggle
-    if @availability.booked?
+    if @availability.past?
+      redirect_to admin_availabilities_path(date: @availability.date),
+        alert: "Turno já passou — não pode ser ativado."
+    elsif @availability.booked?
       redirect_to admin_availabilities_path(date: @availability.date),
         alert: "Turno reservado — não pode ser alterado."
     elsif @availability.available?

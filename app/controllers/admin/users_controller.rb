@@ -28,9 +28,11 @@ class Admin::UsersController < Admin::BaseController
 
   def show
     @booking_groups = @user.booking_groups
-      .includes(:bookings, :payment)
+      .includes(:payments, bookings: :availability)
       .order(created_at: :desc)
       .limit(10)
+    @group_credits = Credit.where(source_booking_group_id: @booking_groups.map(&:id))
+      .group(:source_booking_group_id).sum(:amount_cents)
     @versions = @user.versions.order(created_at: :desc).limit(20)
   end
 

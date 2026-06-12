@@ -72,7 +72,13 @@ class Scheduling::BookingsController < ApplicationController
         redirect_to confirmar_reservas_path, alert: result.error
       end
     else
-      credit_cents = params[:credit_amount].present? ? (params[:credit_amount].to_s.tr(",", ".").to_f * 100).round : nil
+      credit_cents = if params[:use_credit].blank?
+        0 # cliente desmarcou o uso de crédito
+      elsif params[:credit_amount].present?
+        (params[:credit_amount].to_s.tr(",", ".").to_f * 100).round
+      else
+        nil # usar todo o crédito disponível
+      end
 
       result = BookingGroupCreator.call(
         user:             current_user,

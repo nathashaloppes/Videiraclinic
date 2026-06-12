@@ -17,6 +17,13 @@ class User < ApplicationRecord
   validates :cpf,  uniqueness: true, allow_nil: true,
     format: { with: /\A\d{11}\z/, message: "deve conter 11 dígitos" }
 
+  # Campos opcionais em branco viram nil (evita falhar a validação de formato)
+  before_validation do
+    self.cpf   = cpf.presence
+    self.phone = phone.presence if respond_to?(:phone)
+    self.cro   = cro.presence   if respond_to?(:cro)
+  end
+
   scope :dentists, -> { where(role: "dentist") }
 
   def self.from_omniauth(auth)
@@ -30,7 +37,7 @@ class User < ApplicationRecord
   end
 
   def avatar_url
-    return nil unless avatar.attached?
+    return nil unless avatar.attached? && avatar.blob&.persisted?
     Rails.application.routes.url_helpers.rails_blob_path(avatar, only_path: true)
   end
 end

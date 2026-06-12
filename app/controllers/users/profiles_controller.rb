@@ -1,8 +1,4 @@
 class Users::ProfilesController < ApplicationController
-  def show
-    @user = current_user
-  end
-
   def edit
     @user = current_user
   end
@@ -10,7 +6,7 @@ class Users::ProfilesController < ApplicationController
   def update
     @user = current_user
     if @user.update(profile_params)
-      redirect_to perfil_path, notice: "Perfil atualizado."
+      redirect_to edit_perfil_path, notice: "Perfil atualizado."
     else
       render :edit, status: :unprocessable_entity
     end
