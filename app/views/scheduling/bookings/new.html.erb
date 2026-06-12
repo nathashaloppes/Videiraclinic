@@ -1,8 +1,7 @@
 <% content_for :title, "Confirmar reserva" %>
+<% content_for :hide_app_chrome, true %>
 
-<%= render "shared/back_button", path: carrinho_path %>
-
-<h1 class="text-2xl font-medium mb-6 text-vdc-primary">Confirmar reserva</h1>
+<%= render "shared/page_header", path: carrinho_path, title: "Confirmar reserva" %>
 
 <%# ── Resumo ─────────────────────────────────────────────────────────────── %>
 <div class="bg-white rounded-2xl shadow-sm p-4 mb-4">
@@ -56,30 +55,30 @@
     <p class="text-xs font-medium mb-3" style="color: #8D6E63">Forma de pagamento</p>
 
     <% if credit_balance > 0 %>
-      <div class="bg-white rounded-2xl shadow-sm p-4 mb-3 border-2" style="border-color: #5D4037">
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-               style="background-color: #fef8e1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                 stroke="currentColor" stroke-width="1.5" style="color: #5D4037">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M21 12V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2v-5z"/>
-              <path stroke-linecap="round" stroke-linejoin="round" d="M16 12a1 1 0 100 2 1 1 0 000-2z"/>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <p class="text-sm font-medium" style="color: #3E2723">Créditos</p>
-            <p class="text-xs" style="color: #8D6E63">Disponível: R$ <%= money(credit_balance) %></p>
-          </div>
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20"
-               fill="currentColor" style="color: #5D4037">
-            <path fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clip-rule="evenodd"/>
+      <label class="bg-white rounded-2xl shadow-sm p-4 mb-3 border-2 flex items-center gap-3 cursor-pointer" style="border-color: #5D4037">
+        <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+             style="background-color: #fef8e1">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+               stroke="currentColor" stroke-width="1.5" style="color: #5D4037">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M21 12V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2v-5z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 12a1 1 0 100 2 1 1 0 000-2z"/>
           </svg>
         </div>
-        <p class="text-xs mt-3 mb-1" style="color: #8D6E63">
-          Quanto deseja usar? (Deixe vazio para usar todo o crédito)
+        <div class="flex-1">
+          <p class="text-sm font-medium" style="color: #3E2723">Usar meus créditos</p>
+          <p class="text-xs" style="color: #8D6E63">Disponível: R$ <%= money(credit_balance) %></p>
+        </div>
+        <input type="checkbox" name="use_credit" value="1" checked class="sr-only"
+               data-credit-split-target="toggle" data-action="change->credit-split#recompute">
+        <span class="w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center" style="border-color: #5D4037">
+          <span class="w-2.5 h-2.5 rounded-full transition-opacity" data-credit-split-target="dot" style="background-color: #5D4037"></span>
+        </span>
+      </label>
+
+      <div class="bg-white rounded-2xl shadow-sm p-4 mb-3" data-credit-split-target="amountWrap">
+        <p class="text-xs mb-1" style="color: #8D6E63">
+          Quanto usar? (deixe vazio para usar todo o crédito)
         </p>
         <div class="bg-[#fef8e1] rounded-2xl px-4 py-1">
           <%= f.number_field :credit_amount,
@@ -112,12 +111,9 @@
             <p class="text-sm font-medium" style="color: #3E2723">PIX</p>
             <p class="text-xs" style="color: #8D6E63">Pagamento instantâneo</p>
           </div>
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20"
-               fill="currentColor" style="color: #5D4037">
-            <path fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clip-rule="evenodd"/>
-          </svg>
+          <span class="w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center" style="border-color: #5D4037">
+            <span class="w-2.5 h-2.5 rounded-full" style="background-color: #5D4037"></span>
+          </span>
         </div>
       </div>
   </div>

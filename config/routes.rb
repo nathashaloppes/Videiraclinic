@@ -19,7 +19,7 @@ Rails.application.routes.draw do
   get "contato", to: "pages#contact", as: :contact
 
   # ---- Perfil do usuário ------------------------------------
-  resource :perfil, controller: "users/profiles",
+  resource :perfil, only: [:edit, :update], controller: "users/profiles",
     path_names: { edit: "editar" }
 
   resource :carteira, only: [:show], controller: "users/wallets"

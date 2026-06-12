@@ -1,22 +1,27 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Atualiza ao vivo "crédito usado" e "a pagar" conforme o cliente escolhe
-// quanto crédito aplicar no checkout. Crédito é opcional (pode usar 0).
+// Checkout: crédito é opcional (checkbox liga/desliga). Quando o crédito cobre
+// o total, a forma Pix some — pagamento 100% com crédito.
 export default class extends Controller {
-  static targets = ["input", "usedField", "usedRow", "usedAmount", "due", "pix", "submit"]
+  static targets = ["input", "toggle", "dot", "amountWrap", "usedField", "usedRow", "usedAmount", "due", "pix", "submit"]
   static values  = { total: Number, balance: Number }
 
-  connect() {
-    if (this.hasInputTarget) this.recompute()
-  }
+  connect() { this.recompute() }
 
   recompute() {
-    const total   = this.totalValue
-    const balance = this.balanceValue
-    const raw     = this.inputTarget.value.trim()
+    const total     = this.totalValue
+    const balance   = this.balanceValue
+    const useCredit = !this.hasToggleTarget || this.toggleTarget.checked
 
-    let requested = raw === "" ? Math.min(balance, total) : Math.round(parseFloat(raw.replace(",", ".")) * 100)
-    if (isNaN(requested) || requested < 0) requested = 0
+    if (this.hasAmountWrapTarget) this.amountWrapTarget.style.display = useCredit ? "" : "none"
+    if (this.hasDotTarget)        this.dotTarget.style.opacity        = useCredit ? "1" : "0"
+
+    let requested = 0
+    if (useCredit) {
+      const raw = this.hasInputTarget ? this.inputTarget.value.trim() : ""
+      requested = raw === "" ? Math.min(balance, total) : Math.round(parseFloat(raw.replace(",", ".")) * 100)
+      if (isNaN(requested) || requested < 0) requested = 0
+    }
 
     const used = Math.min(requested, balance, total)
     const due  = total - used
