@@ -1,0 +1,107 @@
+# Blueprint do Render — cria tudo de uma vez:
+#   - PostgreSQL gerenciado
+#   - Redis (Key Value) para Sidekiq + ActionCable
+#   - Web Service (Puma)
+#   - Background Worker (Sidekiq)
+#
+# Como usar: no Render, "New +" > "Blueprint" > selecione este repositório.
+# Os valores marcados com `sync: false` precisam ser preenchidos no painel.
+
+databases:
+  - name: videira-dental-db
+    databaseName: videira_dental_production
+    user: videira_dental
+    plan: free          # ATENÇÃO: free é apagado após ~30 dias. Use basic-256mb para produção.
+    region: virginia
+
+services:
+  # ---- Redis (Key Value) ----
+  - type: keyvalue
+    name: videira-dental-redis
+    plan: free
+    region: virginia
+    ipAllowList: []          # só conexões internas (mais seguro)
+    maxmemoryPolicy: noeviction   # exigido pelo Sidekiq
+
+  # ---- Web (Puma) ----
+  - type: web
+    name: videira-dental-web
+    runtime: ruby
+    plan: starter        # free também funciona, mas "dorme" após 15min de inatividade
+    region: virginia
+    buildCommand: "./bin/render-build.sh"
+    preDeployCommand: "bundle exec rails db:migrate"
+    startCommand: "bundle exec puma -C config/puma.rb"
+    healthCheckPath: /up
+    autoDeploy: true
+    envVars:
+      - fromGroup: videira-dental-env
+      - key: DATABASE_URL
+        fromDatabase:
+          name: videira-dental-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: videira-dental-redis
+          type: keyvalue
+          property: connectionString
+
+  # ---- Worker (Sidekiq) ----
+  - type: worker
+    name: videira-dental-worker
+    runtime: ruby
+    plan: starter        # workers NÃO existem no plano free — precisa ser pago
+    region: virginia
+    buildCommand: "bundle install"
+    startCommand: "bundle exec sidekiq -C config/sidekiq.yml"
+    envVars:
+      - fromGroup: videira-dental-env
+      - key: DATABASE_URL
+        fromDatabase:
+          name: videira-dental-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: videira-dental-redis
+          type: keyvalue
+          property: connectionString
+
+# Variáveis compartilhadas entre web e worker.
+# O SECRET_KEY_BASE é gerado automaticamente e fica igual nos dois serviços.
+envVarGroups:
+  - name: videira-dental-env
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: RACK_ENV
+        value: production
+      - key: RAILS_LOG_TO_STDOUT
+        value: "true"
+      - key: RAILS_SERVE_STATIC_FILES
+        value: "true"
+      - key: SECRET_KEY_BASE
+        generateValue: true
+      # ----- Preencher no painel do Render (sync: false) -----
+      - key: APP_HOST            # ex.: videira-dental-web.onrender.com (ou seu domínio)
+        sync: false
+      - key: INFINITEPAY_HANDLE
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USERNAME
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: OWNER_PASSWORD
+        sync: false
+      # ----- Com defaults no código (ajuste se quiser) -----
+      - key: CANCELLATION_LEAD_HOURS
+        value: "48"
+      - key: PAYMENT_EXPIRY_MINUTES
+        value: "30"
