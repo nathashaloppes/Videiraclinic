@@ -126,7 +126,8 @@
     </div>
 
     <label class="flex items-start gap-3 text-xs cursor-pointer mt-1" style="color: #8D6E63">
-      <input type="checkbox" required class="mt-0.5 w-4 h-4 rounded shrink-0 accent-[#5D4037]">
+      <%= f.check_box :terms_accepted, required: true,
+            class: "mt-0.5 w-4 h-4 rounded shrink-0 accent-[#5D4037]" %>
       <span>
         Aceito os
         <%= link_to "termos de uso e política de privacidade", terms_path,

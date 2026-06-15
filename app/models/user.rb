@@ -17,6 +17,11 @@ class User < ApplicationRecord
   validates :cpf,  uniqueness: true, allow_nil: true,
     format: { with: /\A\d{11}\z/, message: "deve conter 11 dígitos" }
 
+  # Aceite dos termos obrigatório no cadastro por e-mail (nil = não validado:
+  # logins via Google e atualizações de perfil não passam por aqui).
+  attr_accessor :terms_accepted
+  validates :terms_accepted, acceptance: { message: "É necessário aceitar os termos de uso para se cadastrar." }
+
   # Campos opcionais em branco viram nil (evita falhar a validação de formato)
   before_validation do
     self.cpf   = cpf.presence
