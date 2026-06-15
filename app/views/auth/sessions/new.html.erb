@@ -64,4 +64,10 @@
 
   <% end %>
 
+  <% if devise_mapping.recoverable? %>
+    <%= link_to "Esqueci minha senha", new_user_password_path,
+          class: "block text-center text-sm font-medium mt-1",
+          style: "color: #8D6E63" %>
+  <% end %>
+
 </div>

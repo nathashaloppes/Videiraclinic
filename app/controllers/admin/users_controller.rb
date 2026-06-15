@@ -69,8 +69,11 @@ class Admin::UsersController < Admin::BaseController
       redirect_to admin_users_path, alert: "Não é possível excluir seu próprio usuário."
     else
       @user.destroy!
-      redirect_to admin_users_path, notice: "Usuário removido."
+      redirect_to admin_users_path, notice: "Cliente removido."
     end
+  rescue ActiveRecord::InvalidForeignKey, ActiveRecord::RecordNotDestroyed
+    redirect_to admin_users_path,
+      alert: "Este cliente possui reservas ou pagamentos e não pode ser excluído (o histórico é preservado)."
   end
 
   def add_credit
