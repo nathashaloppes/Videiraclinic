@@ -71,9 +71,11 @@ class Admin::UsersController < Admin::BaseController
       @user.destroy!
       redirect_to admin_users_path, notice: "Cliente removido."
     end
-  rescue ActiveRecord::InvalidForeignKey, ActiveRecord::RecordNotDestroyed
+  rescue ActiveRecord::InvalidForeignKey,
+         ActiveRecord::RecordNotDestroyed,
+         ActiveRecord::DeleteRestrictionError
     redirect_to admin_users_path,
-      alert: "Este cliente possui reservas ou pagamentos e não pode ser excluído (o histórico é preservado)."
+      alert: "Não é possível excluir um cliente com histórico de reservas ou pagamentos."
   end
 
   def add_credit
