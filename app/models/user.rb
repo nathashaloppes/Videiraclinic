@@ -9,7 +9,6 @@ class User < ApplicationRecord
   has_many :availabilities, foreign_key: :dentist_id, dependent: :nullify
   has_many :booking_groups, foreign_key: :dentist_id
   has_many :bookings,       foreign_key: :dentist_id
-  has_one_attached :avatar
 
   enum :role, { owner: "owner", dentist: "dentist" }, default: "dentist"
 
@@ -47,10 +46,5 @@ class User < ApplicationRecord
       u.password = Devise.friendly_token[0, 20]
       u.skip_confirmation! # e-mail já é verificado pela Google
     end.tap(&:save)
-  end
-
-  def avatar_url
-    return nil unless avatar.attached? && avatar.blob&.persisted?
-    Rails.application.routes.url_helpers.rails_blob_path(avatar, only_path: true)
   end
 end
