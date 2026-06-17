@@ -22,7 +22,7 @@
           <p class="font-medium text-sm" style="color: #3E2723"><%= u.name %></p>
           <p class="text-xs truncate" style="color: #8D6E63"><%= u.email %></p>
           <p class="text-xs mt-0.5" style="color: #8D6E63">
-            <%= pluralize(u.booking_groups.count, "reserva", "reservas") %>
+            <%= pluralize(u.booking_groups.where(status: ["confirmed", "cancelled"]).count, "reserva", "reservas") %>
           </p>
         </div>
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24"
