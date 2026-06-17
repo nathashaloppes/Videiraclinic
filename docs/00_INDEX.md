@@ -45,6 +45,7 @@
 
 | Documento | Descrição |
 |-----------|-----------|
+| [[DEPLOY_PRODUCAO]] | **Produção** — hospedagem (Railway), domínio, e-mail (Resend), variáveis e diagnóstico |
 | [[VSCODE_SETUP]] | Configuração completa do editor para o projeto Rails |
 
 ---
