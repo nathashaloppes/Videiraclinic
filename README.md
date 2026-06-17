@@ -301,19 +301,17 @@ Defina `APP_HOST` com o domínio real (ex: `videiradental.com.br`). Nenhuma conf
 
 ---
 
-## E-mails transacionais (SMTP)
+## E-mails transacionais
 
-`BookingMailer` envia confirmação, cancelamento e emissão de crédito. Em produção (`config/environments/production.rb`), o SMTP é configurado por ENV:
+`BookingMailer` (confirmação, cancelamento, crédito) e os e-mails do Devise (confirmação de
+conta, reset de senha) são enviados em produção.
 
-```bash
-MAILER_FROM=no-reply@videiradental.com.br   # remetente (tem default)
-SMTP_HOST=smtp.postmarkapp.com
-SMTP_PORT=587
-SMTP_USERNAME=...
-SMTP_PASSWORD=...
-```
+> ✅ **Em produção usamos o [Resend](https://resend.com) (API HTTP)**, porque o Railway **bloqueia
+> portas SMTP de saída**. Config: `delivery_method = :resend`, `RESEND_API_KEY` + `MAILER_FROM`
+> (remetente no domínio verificado `@videiraclinic.com.br`). Ver [`docs/05_setup/DEPLOY_PRODUCAO.md`](docs/05_setup/DEPLOY_PRODUCAO.md).
 
-Provedores recomendados: Postmark, Amazon SES ou SendGrid. Em desenvolvimento, deixe o SMTP em branco — os e-mails não são enviados de verdade.
+O código ainda suporta **SMTP** (`config/environments/production.rb` via `SMTP_*`) como alternativa
+caso a hospedagem não bloqueie as portas. Em desenvolvimento os e-mails não são enviados de verdade.
 
 ---
 
@@ -349,7 +347,12 @@ O CI não precisa de secrets para rodar — usa credenciais mock (`INFINITEPAY_H
 
 ## Deploy em produção
 
-O projeto inclui um `Dockerfile` de produção e os arquivos **`config/deploy.yml`** e **`.kamal/secrets`** já versionados (com placeholders). O método recomendado é o **Kamal 2**.
+> ✅ **Em produção (go-live 2026-06), o sistema roda na [Railway](https://railway.app)** — não no Kamal.
+> O guia atual e completo (hospedagem, domínio `www.videiraclinic.com.br`, e-mail via Resend,
+> variáveis e diagnóstico) está em **[`docs/05_setup/DEPLOY_PRODUCAO.md`](docs/05_setup/DEPLOY_PRODUCAO.md)**.
+> A seção abaixo (Kamal/VPS) é mantida como **alternativa de referência**.
+
+O projeto inclui um `Dockerfile` de produção e os arquivos **`config/deploy.yml`** e **`.kamal/secrets`** já versionados (com placeholders). O método de deploy via VPS é o **Kamal 2**.
 
 ### Visão geral do plano
 
