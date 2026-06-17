@@ -192,9 +192,31 @@ E altere o **Publishing status** da consent screen de **Testing** para **In prod
 
 ## Integração com Google Agenda (Owner)
 
-> ⚠️ **Status: planejado — ainda não implementado no código.** Esta seção documenta a configuração e o desenho da integração. Os passos de Google Cloud abaixo já podem ser feitos; a parte de código (serviço de sincronização) precisa ser construída antes de funcionar.
+> ✅ **Status: implementado.** A owner conecta a própria agenda pelo painel admin
+> (Dashboard → **Conectar Google Agenda**), e a sincronização passa a funcionar automaticamente.
 
-**Objetivo:** quando uma reserva é **confirmada** (pagamento aprovado), criar automaticamente um evento na **Google Agenda da owner** na **data e horário** do turno alugado, com o nome da dentista e a sala. Cancelamentos removem o evento correspondente.
+**Objetivo:** quando uma reserva é **confirmada** (pagamento aprovado **ou** quitada por crédito),
+criar automaticamente **um evento por turno** na **Google Agenda da owner**, com o nome da dentista
+e a sala. Cancelamentos removem o evento correspondente.
+
+### Como está implementado
+- **Conexão (uma vez):** `Admin::GoogleCalendarController` faz o OAuth offline e guarda o
+  `refresh_token` em `users.google_refresh_token` (só a owner).
+- **Sincronização:** `GoogleCalendar::EventSyncer` + `GoogleCalendarSyncJob` (assíncrono, com retry).
+- **Hooks:** `BookingGroup` (confirma → cria eventos) e `Booking` (cancela → remove evento).
+  Cada evento criado guarda seu id em `bookings.google_event_id`.
+- **Seguro:** enquanto a owner não conecta a agenda, tudo é no-op (não afeta reservas).
+
+### O que configurar no Google Cloud (uma vez)
+1. **Ativar a Google Calendar API** no projeto (APIs & Services → Library → Enable).
+2. **Adicionar o escopo** `https://www.googleapis.com/auth/calendar.events` na tela de consentimento.
+3. **Adicionar a redirect URI:** `https://www.videiraclinic.com.br/admin/google_calendar/callback`.
+4. Como `calendar.events` é escopo **sensível**, adicione a owner como **Test user** (evita
+   verificação do app para um único usuário interno).
+
+Variável opcional: `GOOGLE_CALENDAR_ID` (padrão `primary` — a agenda principal da owner).
+
+<details><summary>Desenho original (referência)</summary>
 
 ### Como vai funcionar
 
@@ -250,6 +272,8 @@ GOOGLE_CALENDAR_ID=primary
 - Capturar e salvar o *refresh token* no `Auth::OmniauthCallbacksController` quando a owner autoriza
 - Service `GoogleCalendar::EventCreator` / `EventRemover` (gem `google-apis-calendar_v3`)
 - Hook em `PaymentConfirmer` (criar evento) e `BookingCanceller` (remover evento)
+
+</details>
 
 ---
 
