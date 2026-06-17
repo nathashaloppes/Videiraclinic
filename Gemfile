@@ -22,7 +22,7 @@ gem "pundit"
 gem "paper_trail"
 
 # Payments & Background
-gem "sidekiq", "~> 7.0"
+gem "sidekiq", "~> 8.0"
 gem "sidekiq-cron"
 # connection_pool 3.0 mudou a assinatura de #pop e quebra o Sidekiq 7.3.x.
 # Fixa na série 2.5 (compatível) até o Sidekiq suportar a 3.x.
