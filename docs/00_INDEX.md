@@ -60,4 +60,4 @@ FONTE_DA_VERDADE → ARQUITETURA → BANCO_DE_DADOS → MODULOS → INFINITEPAY
   03_design/README → TEMPLATE_TELA_E_MODAL → DESIGN_SYSTEM → CATALOGO_TELAS
 ```
 
-> **README.md** (raiz do projeto) cobre setup local, OAuth, InfinitePay, SMTP e deploy com Kamal.
+> **README.md** (raiz do projeto) cobre setup local, OAuth, InfinitePay, SMTP e deploy na Railway.

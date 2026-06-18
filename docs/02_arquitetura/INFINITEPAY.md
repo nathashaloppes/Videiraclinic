@@ -238,7 +238,7 @@ Use `order_nsu` para identificar qual `BookingGroup` confirmar.
 ## Variáveis de ambiente necessárias
 
 ```bash
-# .env e .kamal/secrets
+# .env (local) e variáveis no serviço da Railway (produção)
 INFINITEPAY_HANDLE=seu-handle-sem-cifrao
 ```
 
@@ -272,7 +272,7 @@ MERCADOPAGO_WEBHOOK_SECRET=
 | `app/controllers/payments/payments_controller.rb` | Adaptar tela de retorno |
 | `app/views/payments/payments/` | Remover partials `_pending` (QR code), simplificar `_paid` |
 | `app/models/payment.rb` | Campo `gateway` muda de `"mercadopago"` para `"infinitepay"` |
-| `config/deploy.yml` e `.kamal/secrets` | Trocar vars MP por `INFINITEPAY_HANDLE` |
+| Variáveis no serviço da Railway (e `.env.example`) | Trocar vars MP por `INFINITEPAY_HANDLE` |
 | `README.md` | Atualizar seção de configuração |
 | `.env.example` | Trocar vars MP por InfinitePay |
 
