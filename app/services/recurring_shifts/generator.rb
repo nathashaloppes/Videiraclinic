@@ -3,18 +3,25 @@ module RecurringShifts
   class Generator
     HORIZON_DAYS = 90
 
-    # Geração diária (job): cria os turnos só para datas NOVAS (após o marcador),
-    # preservando exclusões/bloqueios que o admin fez em dias já gerados.
+    # Geração (job diário + backfill): garante os turnos para toda a janela de
+    # 90 dias. É idempotente (pula os que já existem) e auto-corretivo — se algum
+    # dia ficou sem turno, ele preenche. Para pular um dia específico (feriado),
+    # o admin deve BLOQUEAR o turno (toggle) em vez de excluir: bloqueado conta
+    # como existente e não é recriado.
     def self.advance(clinic)
       templates = clinic.shift_templates.active.to_a
       return if templates.empty?
 
       target_end = Date.current + HORIZON_DAYS
-      start_date = [(clinic.shifts_generated_until || Date.yesterday) + 1, Date.current].max
-      return if start_date > target_end
+      existing = clinic.availabilities.where(date: Date.current..target_end)
+                       .pluck(:date, :starts_at)
+                       .map { |d, s| [d, s.strftime("%H:%M")] }.to_set
 
-      (start_date..target_end).each do |date|
-        templates.each { |t| create_availability(clinic, t, date) }
+      (Date.current..target_end).each do |date|
+        templates.each do |t|
+          next if existing.include?([date, t.starts_at.strftime("%H:%M")])
+          create_availability(clinic, t, date)
+        end
       end
 
       clinic.update_column(:shifts_generated_until, target_end)
