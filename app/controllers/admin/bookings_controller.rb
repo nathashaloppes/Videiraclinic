@@ -14,10 +14,11 @@ class Admin::BookingsController < Admin::BaseController
       scope = scope.where(status: "confirmed")
     end
 
-    if params[:date].present?
-      scope = scope.joins(bookings: :availability)
-                   .where(availabilities: { date: Date.parse(params[:date]) })
-    end
+    # Sempre filtra pelo dia selecionado (hoje por padrão) — assim a lista já
+    # abre mostrando as reservas do dia, batendo com o calendário.
+    @date = params[:date].present? ? (Date.parse(params[:date]) rescue Date.current) : Date.current
+    scope = scope.joins(bookings: :availability)
+                 .where(availabilities: { date: @date })
 
     @pagy, @booking_groups = pagy(scope)
 

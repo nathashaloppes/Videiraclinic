@@ -117,7 +117,7 @@ class Scheduling::BookingsController < ApplicationController
       return redirect_to reservas_path, alert: "Reservas com múltiplos turnos não podem ser trocadas. Cancele e crie novamente."
     end
 
-    lead = ENV.fetch("CANCELLATION_LEAD_HOURS", 48).to_i
+    lead = ENV.fetch("CANCELLATION_LEAD_HOURS", 24).to_i
     unless booking.availability.cancellable?
       return redirect_to reservas_path, alert: "Alterações só são permitidas com #{lead}h de antecedência."
     end

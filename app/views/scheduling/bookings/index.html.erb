@@ -116,7 +116,7 @@
             </button>
           <% else %>
             <p class="text-sm" style="color:#8D6E63">
-              Alterações e cancelamentos só são permitidos com <%= ENV.fetch("CANCELLATION_LEAD_HOURS", 48).to_i %>h de antecedência.
+              Alterações e cancelamentos só são permitidos com <%= ENV.fetch("CANCELLATION_LEAD_HOURS", 24).to_i %>h de antecedência.
             </p>
           <% end %>
         <% else %>
