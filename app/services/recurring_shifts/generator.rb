@@ -13,13 +13,15 @@ module RecurringShifts
       return if templates.empty?
 
       target_end = Date.current + HORIZON_DAYS
+      # Chave pelo intervalo completo (início + fim): assim uma Diária (07–18)
+      # não é confundida com a Manhã (07–12), que tem o mesmo horário de início.
       existing = clinic.availabilities.where(date: Date.current..target_end)
-                       .pluck(:date, :starts_at)
-                       .map { |d, s| [d, s.strftime("%H:%M")] }.to_set
+                       .pluck(:date, :starts_at, :ends_at)
+                       .map { |d, s, e| [d, s.strftime("%H:%M"), e.strftime("%H:%M")] }.to_set
 
       (Date.current..target_end).each do |date|
         templates.each do |t|
-          next if existing.include?([date, t.starts_at.strftime("%H:%M")])
+          next if existing.include?([date, t.starts_at.strftime("%H:%M"), t.ends_at.strftime("%H:%M")])
           create_availability(clinic, t, date)
         end
       end
