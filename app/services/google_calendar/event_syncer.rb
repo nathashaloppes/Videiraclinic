@@ -16,15 +16,41 @@ module GoogleCalendar
       new.remove_event(booking)
     end
 
+    # Ressincroniza as reservas confirmadas futuras ainda sem evento.
+    # Chamado ao conectar a agenda (backfill do que já estava confirmado).
+    def self.backfill
+      new.backfill
+    end
+
     # Cria 1 evento por turno (booking) da reserva confirmada.
     def create_events(group)
-      return unless connected?
+      unless connected?
+        Rails.logger.warn("[GoogleCalendar] nenhum owner com Google Agenda conectada — evento NÃO criado (group=#{group.id})")
+        return
+      end
 
       group.bookings.includes(availability: :service).find_each do |booking|
         next if booking.google_event_id.present?
+        next if booking.availability.past?
 
         result = service.insert_event(calendar_id, build_event(group, booking))
         booking.update_column(:google_event_id, result.id)
+        Rails.logger.info("[GoogleCalendar] evento criado event=#{result.id} booking=#{booking.id}")
+      end
+    rescue => e
+      Rails.logger.error("[GoogleCalendar] falha ao criar evento (group=#{group.id}): #{e.class}: #{e.message}")
+      raise
+    end
+
+    def backfill
+      unless connected?
+        Rails.logger.warn("[GoogleCalendar] backfill ignorado — nenhum owner conectado")
+        return
+      end
+
+      BookingGroup.where(status: "confirmed").find_each do |group|
+        future = group.bookings.joins(:availability).where("availabilities.date >= ?", Date.current).exists?
+        create_events(group) if future
       end
     end
 

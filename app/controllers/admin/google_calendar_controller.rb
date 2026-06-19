@@ -25,7 +25,9 @@ class Admin::GoogleCalendarController < Admin::BaseController
 
     if client.refresh_token.present?
       current_user.update!(google_refresh_token: client.refresh_token)
-      redirect_to admin_root_path, notice: "Google Agenda conectada com sucesso."
+      # Ressincroniza as reservas confirmadas futuras que ainda não têm evento.
+      GoogleCalendarSyncJob.perform_later("backfill")
+      redirect_to admin_root_path, notice: "Google Agenda conectada com sucesso. As reservas confirmadas serão sincronizadas."
     else
       redirect_to admin_root_path,
         alert: "O Google não enviou o token de atualização. Revogue o acesso antigo em " \

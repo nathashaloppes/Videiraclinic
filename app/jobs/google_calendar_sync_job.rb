@@ -5,8 +5,8 @@ class GoogleCalendarSyncJob < ApplicationJob
   retry_on Google::Apis::RateLimitError,     wait: :polynomially_longer, attempts: 3
   retry_on Signet::AuthorizationError,       attempts: 2
 
-  # action: "create" (booking_group_id) | "remove" (booking_id)
-  def perform(action, id)
+  # action: "create" (booking_group_id) | "remove" (booking_id) | "backfill"
+  def perform(action, id = nil)
     case action.to_s
     when "create"
       group = BookingGroup.find_by(id: id)
@@ -14,6 +14,8 @@ class GoogleCalendarSyncJob < ApplicationJob
     when "remove"
       booking = Booking.find_by(id: id)
       GoogleCalendar::EventSyncer.remove_event(booking) if booking
+    when "backfill"
+      GoogleCalendar::EventSyncer.backfill
     end
   end
 end
