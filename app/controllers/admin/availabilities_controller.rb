@@ -59,13 +59,23 @@ class Admin::AvailabilitiesController < Admin::BaseController
 
   def destroy
     if @availability.booked?
-      redirect_to admin_availabilities_path(date: @availability.date),
+      return redirect_to admin_availabilities_path(date: @availability.date),
         alert: "Turno reservado — não é possível excluir."
-    else
-      @availability.destroy!
-      redirect_to admin_availabilities_path(date: @availability.date),
-        notice: "Turno removido."
     end
+
+    ActiveRecord::Base.transaction do
+      # Remove vínculos mortos (reservas canceladas/expiradas) e libera quem este
+      # turno tenha eclipsado, evitando violação de chave estrangeira.
+      Booking.where(availability_id: @availability.id).delete_all
+      current_clinic.availabilities.where(eclipsed_by_id: @availability.id)
+        .update_all(status: "available", eclipsed_by_id: nil)
+      @availability.destroy!
+    end
+    redirect_to admin_availabilities_path(date: @availability.date), notice: "Turno removido."
+  rescue => e
+    Rails.logger.error("[Availabilities#destroy] #{e.class}: #{e.message}")
+    redirect_to admin_availabilities_path(date: @availability.date),
+      alert: "Não foi possível excluir este turno."
   end
 
   private

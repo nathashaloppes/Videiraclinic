@@ -29,7 +29,7 @@ class BookingGroupCreator < ApplicationService
       availabilities = Availability
         .where(id: @availability_ids, clinic: @clinic, status: "available")
         .lock("FOR UPDATE")
-        .load
+        .to_a
 
       if availabilities.size != @availability_ids.size
         raise SlotUnavailableError, "Um ou mais horários foram reservados por outra pessoa."
