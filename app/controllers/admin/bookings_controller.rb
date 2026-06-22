@@ -14,13 +14,30 @@ class Admin::BookingsController < Admin::BaseController
       scope = scope.where(status: "confirmed")
     end
 
-    # Sempre filtra pelo dia selecionado (hoje por padrão) — assim a lista já
-    # abre mostrando as reservas do dia, batendo com o calendário.
-    @date = params[:date].present? ? (Date.parse(params[:date]) rescue Date.current) : Date.current
-    scope = scope.joins(bookings: :availability)
-                 .where(availabilities: { date: @date })
+    # Três modos de visualização: dia (padrão), mês ou todos.
+    @view = %w[day month all].include?(params[:view]) ? params[:view] : "day"
 
-    @pagy, @booking_groups = pagy(scope)
+    case @view
+    when "all"
+      # Sem filtro de data — todas as reservas, mais recentes primeiro.
+    when "month"
+      @month = parse_month(params[:month]) || Date.current.beginning_of_month
+      range  = @month.beginning_of_month..@month.end_of_month
+      scope  = scope.joins(bookings: :availability)
+                    .where(availabilities: { date: range })
+    else # "day"
+      @date = (Date.parse(params[:date]) rescue Date.current)
+      scope = scope.joins(bookings: :availability)
+                   .where(availabilities: { date: @date })
+    end
+
+    @pagy, @booking_groups = pagy(scope.distinct)
+
+    # Meses que possuem reservas (para o select), do mais recente ao mais antigo.
+    @available_months = current_clinic.availabilities
+      .joins(:booking).distinct.pluck(:date)
+      .map(&:beginning_of_month).uniq.sort.reverse
+    @available_months = [Date.current.beginning_of_month] if @available_months.empty?
 
     # Turnos livres (e ainda não passados) para alteração manual de reserva
     @available_slots = current_clinic.availabilities.available
@@ -81,6 +98,13 @@ class Admin::BookingsController < Admin::BaseController
   end
 
   private
+
+  def parse_month(value)
+    return nil if value.blank?
+    Date.strptime(value, "%Y-%m").beginning_of_month
+  rescue ArgumentError
+    nil
+  end
 
   def set_booking_group
     @booking_group = policy_scope(BookingGroup).find(params[:id])
