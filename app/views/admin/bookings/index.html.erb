@@ -21,7 +21,7 @@
       <path stroke-linecap="round" stroke-linejoin="round"
             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
     </svg>
-    <span><%= @view == "day" ? l(selected_date, format: "%d/%m/%Y") : "Por dia" %></span>
+    <span>Por dia</span>
   </button>
 
   <%# Mês (select) %>
@@ -31,7 +31,7 @@
          stroke="currentColor" stroke-width="2">
       <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
     </svg>
-    <span><%= @view == "month" ? l(@month, format: "%b/%Y") : "Por mês" %></span>
+    <span>Por mês</span>
     <select class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             onchange="if(this.value) window.location='<%= admin_bookings_path %>?view=month&month='+this.value">
       <option value="">Selecione o mês</option>
@@ -56,6 +56,17 @@
 
   <%= render "shared/calendar_dialog" %>
 </div>
+
+<%# Legenda do filtro ativo %>
+<p class="text-xs mb-3 -mt-2" style="color: #8D6E63">
+  <% if @view == "day" %>
+    Mostrando: <%= l(selected_date, format: "%A, %-d de %B de %Y").capitalize %>
+  <% elsif @view == "month" %>
+    Mostrando: <%= l(@month, format: "%B de %Y").capitalize %>
+  <% else %>
+    Mostrando: todas as reservas
+  <% end %>
+</p>
 
 <%# ── Lista de reservas ───────────────────────────────────────────────────── %>
 <% if @booking_groups.empty? %>
