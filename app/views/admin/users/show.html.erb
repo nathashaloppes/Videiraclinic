@@ -222,6 +222,12 @@
                  style="color: #3E2723">
         </div>
       </div>
+      <label class="flex items-start gap-2 cursor-pointer">
+        <input type="hidden" name="from_revenue" value="0">
+        <input type="checkbox" name="from_revenue" value="1" checked
+               class="mt-0.5 w-4 h-4 shrink-0 accent-[#5D4037] cursor-pointer">
+        <span class="text-sm" style="color: #5D4037">Esse crédito deve sair da receita do mês?</span>
+      </label>
       <div class="flex gap-3">
         <button type="button" onclick="this.closest('dialog').close()"
                 class="btn-outline flex-1 cursor-pointer">Cancelar</button>

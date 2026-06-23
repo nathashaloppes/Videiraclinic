@@ -105,12 +105,19 @@ class Admin::UsersController < Admin::BaseController
 
   def remove_credit
     amount_cents = (params[:amount].to_f * 100).to_i
-    available = Credit.balance_for(user: @user, clinic: current_user.clinic)
+    # Marcado: tira dos créditos que entram na receita (sai da receita do mês);
+    # desmarcado: tira dos que estão fora da receita.
+    from_revenue = params[:from_revenue] == "1"
+
+    pool = Credit.available.where(user: @user, clinic: current_user.clinic, in_revenue: from_revenue)
+    available = pool.sum(:amount_cents)
     if amount_cents <= 0 || amount_cents > available
-      return redirect_to admin_user_path(@user), alert: "Valor inválido ou excede o saldo."
+      return redirect_to admin_user_path(@user),
+        alert: "Valor inválido ou excede o saldo desse tipo de crédito (R$ #{format('%.2f', available / 100.0)})."
     end
+
     remaining = amount_cents
-    Credit.available.where(user: @user, clinic: current_user.clinic).order(:created_at).each do |c|
+    pool.order(:created_at).each do |c|
       break if remaining <= 0
       if c.amount_cents <= remaining
         remaining -= c.amount_cents
