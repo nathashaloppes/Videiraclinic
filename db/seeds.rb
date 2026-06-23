@@ -87,10 +87,13 @@ end
 # falha para não derrubar o deploy.
 begin
   cibele = User.find_by("email ILIKE ?", "%cibeleabreu%")
-  if cibele && Credit.balance_for(user: cibele, clinic: cibele.clinic) < 500
-    Credit.create!(user: cibele, clinic: cibele.clinic, amount_cents: 500,
-                   reason: "Recarga via Pix")
-    puts "  Crédito R$ 5,00 restaurado para #{cibele.email}"
+  if cibele
+    cibele.update_column(:clinic_id, clinic.id) if cibele.clinic_id.nil?
+    if Credit.balance_for(user: cibele, clinic: clinic) < 500
+      Credit.create!(user: cibele, clinic: clinic, amount_cents: 500,
+                     reason: "Recarga via Pix")
+      puts "  Crédito R$ 5,00 restaurado para #{cibele.email}"
+    end
   end
 rescue => e
   puts "  [aviso] restauração de crédito da Cibele pulada: #{e.class}: #{e.message}"
