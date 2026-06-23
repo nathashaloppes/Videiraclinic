@@ -122,7 +122,7 @@
   <% if @booking_groups.empty? %>
     <p class="text-sm" style="color: #8D6E63">Sem transações.</p>
   <% else %>
-    <div class="flex flex-col gap-0">
+    <div class="flex flex-col gap-0 max-h-[26rem] overflow-y-auto pr-2">
       <% @booking_groups.each_with_index do |group, i| %>
         <% extra = group.payments.reject { |p| p.extras.present? }.sort_by(&:created_at).drop(1).sum(&:amount_cents) %>
         <% credit = @group_credits[group.id] %>
