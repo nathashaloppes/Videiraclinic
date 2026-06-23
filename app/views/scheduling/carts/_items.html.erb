@@ -71,7 +71,7 @@
 
   <% if cart_availabilities.any? %>
     <% clinic = cart_availabilities.first&.clinic %>
-    <% pricing = DiscountCalculator.call(availability_ids: cart_availabilities.map(&:id), clinic: clinic).value %>
+    <% pricing = DiscountCalculator.call(availability_ids: cart_availabilities.map(&:id), clinic: clinic, dentist: current_user).value %>
   <% else %>
     <% pricing = { subtotal_cents: 0, discount_cents: 0, total_cents: 0 } %>
   <% end %>

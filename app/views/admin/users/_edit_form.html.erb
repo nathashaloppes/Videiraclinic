@@ -13,5 +13,14 @@
   <%= f.vdc_field :cpf,        "CPF (11 dígitos)", :text_field,
         data: { controller: "input-mask", "input-mask-pattern-value": "cpf" } %>
   <%= f.vdc_field :birth_date, "Data de nascimento",  :date_field %>
+
+  <div>
+    <%= f.vdc_field :discount_per_slot, "Desconto por turno (R$)", :text_field,
+          value: (user.discount_per_slot_cents.to_i.positive? ? number_with_precision(user.discount_per_slot, precision: 2, separator: ",", delimiter: "") : ""),
+          placeholder: "R$ 0,00",
+          data: { controller: "input-mask", "input-mask-pattern-value": "money" } %>
+    <p class="text-xs mt-1 text-vdc-secondary">Abatido de cada turno reservado por este cliente (deixe vazio para sem desconto).</p>
+  </div>
+
   <%= render "shared/modal_actions", label: "Salvar" %>
 <% end %>

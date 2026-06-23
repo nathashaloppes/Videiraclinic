@@ -1,9 +1,14 @@
 class User < ApplicationRecord
+  include MoneyConvertible
+  money_field :discount_per_slot
+
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :confirmable,
          :omniauthable, omniauth_providers: [:google_oauth2]
 
   has_paper_trail
+
+  validates :discount_per_slot_cents, numericality: { greater_than_or_equal_to: 0 }
 
   belongs_to :clinic, optional: true
   has_many :availabilities, foreign_key: :dentist_id, dependent: :nullify

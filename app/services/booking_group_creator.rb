@@ -16,7 +16,7 @@ class BookingGroupCreator < ApplicationService
     return failure("Selecione ao menos um horário.") if @availability_ids.empty?
     return failure("Horário inválido ou não encontrado.") unless @clinic
 
-    calc = DiscountCalculator.call(availability_ids: @availability_ids, clinic: @clinic)
+    calc = DiscountCalculator.call(availability_ids: @availability_ids, clinic: @clinic, dentist: @user)
     return failure("Erro ao calcular preços.") unless calc.success?
 
     pricing = calc.value

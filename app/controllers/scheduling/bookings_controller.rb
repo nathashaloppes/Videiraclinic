@@ -43,7 +43,8 @@ class Scheduling::BookingsController < ApplicationController
 
     result = DiscountCalculator.call(
       availability_ids: cart_ids,
-      clinic:           clinic
+      clinic:           clinic,
+      dentist:          current_user
     )
 
     if result.failure?

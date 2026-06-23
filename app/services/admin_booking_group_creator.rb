@@ -24,13 +24,17 @@ class AdminBookingGroupCreator < ApplicationService
         return failure("Há horários selecionados que se sobrepõem. Remova um deles.")
       end
 
-      total = availabilities.sum(&:price_cents)
+      subtotal = availabilities.sum(&:price_cents)
+      # Desconto pessoal do dentista por turno elegível (não conta avulsa/diária).
+      eligible = availabilities.reject { |a| a.avulsa? || a.diaria? }.size
+      discount = [@dentist.discount_per_slot_cents.to_i * eligible, subtotal].min
+      total    = subtotal - discount
 
       group = BookingGroup.create!(
         clinic:         @clinic,
         dentist:        @dentist,
-        subtotal_cents: total,
-        discount_cents: 0,
+        subtotal_cents: subtotal,
+        discount_cents: discount,
         total_cents:    total,
         status:         "confirmed"
       )
