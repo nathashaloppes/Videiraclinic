@@ -5,9 +5,12 @@ class Admin::DashboardController < Admin::BaseController
     # Mês selecionado (padrão: mês atual).
     @month = parse_month(params[:month]) || Date.current.beginning_of_month
 
-    # Créditos TOTAIS: saldo de crédito real ainda não usado em todas as
-    # carteiras. Snapshot — não muda ao trocar o mês.
-    @total_credits = available_real_credits(clinic).sum(:amount_cents)
+    # Créditos TOTAIS: todo o crédito (dinheiro real) ainda não usado nas
+    # carteiras — inclui os marcados "fora da receita" (já pagos antes); exclui
+    # só o promocional. Snapshot — não muda ao trocar o mês.
+    @total_credits = Credit.available.where(clinic: clinic)
+      .where.not("reason ILIKE ?", "%promocional%")
+      .sum(:amount_cents)
 
     # Receita e crédito atribuídos ao MÊS EM QUE O DINHEIRO ENTROU na conta:
     # pagamentos externos pelo mês do pagamento; crédito pelo mês da COMPRA do

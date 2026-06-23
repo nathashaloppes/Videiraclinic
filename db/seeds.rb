@@ -99,6 +99,20 @@ rescue => e
   puts "  [aviso] restauração de crédito da Cibele pulada: #{e.class}: #{e.message}"
 end
 
+# ── Correção pontual: crédito da Isadora é "fora da receita" ────────────────
+# Esse crédito foi pago antes e adicionado pelo admin; deveria estar marcado
+# para não entrar na receita (bug: ficou in_revenue true). Idempotente.
+begin
+  isadora = User.find_by("email ILIKE ?", "%isadora.monteiro.melo%")
+  if isadora
+    Credit.where(user: isadora, in_revenue: true)
+          .where("reason ILIKE ?", "%admin%")
+          .update_all(in_revenue: false)
+  end
+rescue => e
+  puts "  [aviso] correção do crédito da Isadora pulada: #{e.class}: #{e.message}"
+end
+
 puts "\nSeed concluído!"
 puts "  owner:   #{owner_email} | #{senha}"
 puts "  dentist: dentista@videiradental.com.br | #{senha}"
