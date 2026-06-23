@@ -134,6 +134,7 @@
               </p>
               <% group.bookings.each do |b| %>
                 <p class="text-xs" style="color: #8D6E63">
+                  <%= l(b.availability.date, format: "%d/%m") %> <%= b.availability.label %>
                   <%= b.availability.starts_at.strftime("%H:%M") %> às <%= b.availability.ends_at.strftime("%H:%M") %>
                 </p>
               <% end %>
