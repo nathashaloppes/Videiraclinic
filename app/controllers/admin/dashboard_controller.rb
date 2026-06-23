@@ -12,10 +12,10 @@ class Admin::DashboardController < Admin::BaseController
       .joins(booking_group: :payment)
       .where(payments: { status: "pending" }).count
 
-    # Receita = valor de face das reservas CONFIRMADAS, contado uma vez por
-    # reserva (não por pagamento). Evita contagem dupla com crédito/recarga e
-    # ciclos de cancelar-reservar. Crédito não é dinheiro novo: a reserva paga
-    # com crédito conta no seu valor uma única vez.
+    # Receita = dinheiro EXTERNO recebido (Pix/admin) das reservas confirmadas.
+    # Pagamentos com crédito do cliente NÃO contam — esse valor não é dinheiro
+    # novo (já entrou na recarga ou é promocional). Reservas canceladas/expiradas
+    # também não entram. Cada pagamento conta uma vez (evita contagem dupla).
     range = Date.current.beginning_of_month..Date.current.end_of_month
     @monthly_turnos, @monthly_insumos = revenue_split(clinic, range)
     @monthly_revenue = @monthly_turnos + @monthly_insumos
@@ -25,28 +25,27 @@ class Admin::DashboardController < Admin::BaseController
 
   private
 
-  # Soma o valor das reservas confirmadas cujo pagamento foi confirmado no
-  # período, separando turnos (total − insumos) de insumos.
+  # Soma o dinheiro externo recebido no período, separando turnos de insumos.
   def revenue_split(clinic, range)
     turnos = insumos = 0
-    confirmed_groups(clinic).each do |g|
-      next unless range.cover?(group_paid_at(g))
-
-      ins = extras_cents(g.extras)
-      turnos  += [g.total_cents.to_i - ins, 0].max
+    cash_payments(clinic, range).group_by(&:booking_group_id).each do |_gid, payments|
+      cash = payments.sum { |p| p.amount_cents.to_i }
+      ins  = payments.sum { |p| extras_cents(p.extras) }
+      ins  = extras_cents(payments.first.booking_group&.extras) if ins.zero? # dados antigos
+      ins  = [ins, cash].min
       insumos += ins
+      turnos  += cash - ins
     end
     [turnos, insumos]
   end
 
-  def confirmed_groups(clinic)
-    BookingGroup.where(clinic: clinic, status: "confirmed").includes(:payments)
-  end
-
-  # Quando a reserva entrou (mês da receita): data do 1º pagamento confirmado,
-  # com fallback para a criação da reserva (ex.: reserva manual do admin).
-  def group_paid_at(group)
-    group.payments.select(&:paid?).filter_map(&:paid_at).min || group.created_at
+  # Pagamentos pagos, externos (não-crédito), de reservas confirmadas.
+  def cash_payments(clinic, range)
+    Payment.paid.where(clinic: clinic, paid_at: range)
+      .where.not(gateway: "credit")
+      .joins(:booking_group).where(booking_groups: { status: "confirmed" })
+      .includes(:booking_group)
+      .to_a
   end
 
   def extras_cents(extras)
@@ -54,11 +53,10 @@ class Admin::DashboardController < Admin::BaseController
   end
 
   def build_monthly_series(clinic, months:)
-    groups = confirmed_groups(clinic).to_a
-    today  = Date.current
+    today = Date.current
     (0...months).map { |i| (today << i).beginning_of_month }.reverse.map do |start|
       range = start..start.end_of_month
-      cents = groups.sum { |g| range.cover?(group_paid_at(g)) ? g.total_cents.to_i : 0 }
+      cents = cash_payments(clinic, range).sum { |p| p.amount_cents.to_i }
       { month: start, cents: cents }
     end
   end
